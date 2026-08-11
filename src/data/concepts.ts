@@ -75,13 +75,13 @@ export const concepts: Concept[] = [
     title: "Removing Duplicates",
     section: "core",
     order: 6,
-    simpleDescription:
-      "A Set can only hold unique values, so dropping an array's items into one instantly removes duplicates.",
+    simpleDescription: "Remove repeated values so each value appears only once.",
     technicalDescription:
-      "Set stores values by SameValueZero equality; [...new Set(array)] is the idiomatic O(n) dedup, while filter()+indexOf() achieves the same result in O(n²) and reduce() offers a manually accumulated equivalent.",
+      "`Set` keeps unique values using SameValueZero equality and preserves their first-seen order. Spreading the Set creates a new array, while `filter()` with `indexOf()` and `reduce()` with `includes()` provide manual alternatives.",
     difficulty: "beginner",
     prerequisites: ["user-existence"],
-    interviewQuestion: "How would you remove duplicates from an array of numbers?",
+    interviewQuestion:
+      "What does `[...new Set(array)]` return, and what limitation should you remember when the array contains objects?",
   },
   {
     id: "sorting",

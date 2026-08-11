@@ -56,6 +56,8 @@ export interface ExplainSummaryConfig {
   bullets: ReactNode[];
   /** Always-shown highlighted callout below the bullets, e.g. a language quirk. */
   quirkNote?: ReactNode;
-  /** Extra depth shown only in Technical explanation mode — deepens, doesn't duplicate. */
+  /** Always-shown extra depth below the bullets — deepens, doesn't duplicate. Not gated by the Concept/Technical toggle. */
   technicalNote?: ReactNode;
+  /** Compact label/description comparison list, rendered distinctly from the bullet list (e.g. comparing a few named approaches). */
+  comparisonItems?: { label: string; description: ReactNode }[];
 }

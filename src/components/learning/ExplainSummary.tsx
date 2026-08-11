@@ -20,6 +20,7 @@ export function ExplainSummary({
   bullets,
   quirkNote,
   technicalNote,
+  comparisonItems,
   className,
 }: ExplainSummaryProps) {
   return (
@@ -39,6 +40,16 @@ export function ExplainSummary({
             </li>
           ))}
         </ul>
+        {comparisonItems && comparisonItems.length > 0 && (
+          <div className="grid gap-2 rounded-md border border-border bg-muted/30 p-3 sm:grid-cols-3">
+            {comparisonItems.map((item) => (
+              <div key={item.label} className="space-y-0.5">
+                <p className="text-xs font-semibold text-foreground">{item.label}</p>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {quirkNote && (
           <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
             {quirkNote}

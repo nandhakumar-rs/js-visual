@@ -1,38 +1,79 @@
 "use client";
 
+import { useState } from "react";
+import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { LabControlsProps } from "@/types/lab";
 import type { DedupInputs, DedupMethod, DedupStepState } from "./types";
 
 const METHODS: { value: DedupMethod; label: string }[] = [
-  { value: "set", label: "Set" },
-  { value: "filter", label: "filter" },
-  { value: "reduce", label: "reduce" },
+  { value: "set", label: "Set — keep one of each" },
+  { value: "filter", label: "filter — keep first occurrences" },
+  { value: "reduce", label: "reduce — build the result manually" },
 ];
 
-function parseList(text: string): number[] {
-  return text
-    .split(",")
-    .map((s) => Number(s.trim()))
-    .filter((n) => !Number.isNaN(n));
+const DEFAULT_INPUTS: DedupInputs = { values: [1, 2, 2, 3, 1], method: "set" };
+const DEFAULT_TEXT = "1, 2, 2, 3, 1";
+
+function parseValues(text: string): { values: number[] } | { error: string } {
+  const trimmed = text.trim();
+  if (trimmed === "") return { error: "Enter at least one number" };
+  const values: number[] = [];
+  for (const token of trimmed.split(",").map((t) => t.trim())) {
+    if (token === "") continue;
+    const n = Number(token);
+    if (Number.isNaN(n)) return { error: `"${token}" isn't a number` };
+    values.push(n);
+  }
+  if (values.length === 0) return { error: "Enter at least one number" };
+  return { values };
 }
 
-export function DedupControls({ inputs, onInputsChange }: LabControlsProps<DedupInputs, DedupStepState>) {
+export function DedupControls({ inputs, onInputsChange, engine }: LabControlsProps<DedupInputs, DedupStepState>) {
+  const [text, setText] = useState(inputs.values.join(", "));
+  const [error, setError] = useState<string | null>(null);
+
+  function commit(value: string) {
+    const result = parseValues(value);
+    if ("error" in result) {
+      setError(result.error);
+      return;
+    }
+    setError(null);
+    onInputsChange({ ...inputs, values: result.values });
+  }
+
+  function handleResetDefaults() {
+    setText(DEFAULT_TEXT);
+    setError(null);
+    onInputsChange(DEFAULT_INPUTS);
+    engine.setSpeed(1);
+  }
+
   return (
-    <div className="flex flex-wrap items-end gap-4">
-      <div className="space-y-1">
-        <Label htmlFor="dedup-array">Array</Label>
+    <div className="flex flex-wrap items-start gap-4">
+      <div className="w-48 space-y-1">
+        <Label htmlFor="dedup-values">Numbers to clean</Label>
         <Input
-          id="dedup-array"
-          defaultValue={inputs.array.join(", ")}
-          onBlur={(e) => onInputsChange({ ...inputs, array: parseList(e.target.value) })}
+          id="dedup-values"
+          value={text}
+          aria-invalid={error ? true : undefined}
+          onChange={(e) => setText(e.target.value)}
+          onBlur={(e) => commit(e.target.value)}
         />
+        {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
-      <div className="space-y-1.5">
-        <p className="text-sm font-medium">Method</p>
-        <div role="radiogroup" aria-label="Method" className="inline-flex gap-1 rounded-lg border border-border bg-muted/30 p-1">
+
+      <div className="space-y-1">
+        <Label>How should we remove repeats?</Label>
+        <div
+          role="radiogroup"
+          aria-label="How should we remove repeats?"
+          className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
+        >
           {METHODS.map((m) => (
             <button
               key={m.value}
@@ -41,7 +82,7 @@ export function DedupControls({ inputs, onInputsChange }: LabControlsProps<Dedup
               aria-checked={inputs.method === m.value}
               onClick={() => onInputsChange({ ...inputs, method: m.value })}
               className={cn(
-                "rounded-md px-3 py-1.5 font-mono text-sm transition-colors",
+                "rounded-md px-3 py-1 text-sm transition-colors",
                 inputs.method === m.value
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -51,6 +92,14 @@ export function DedupControls({ inputs, onInputsChange }: LabControlsProps<Dedup
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="space-y-1">
+        <div className="h-3.5" aria-hidden />
+        <Button variant="outline" size="default" onClick={handleResetDefaults} className="gap-1.5">
+          <RotateCcw className="size-4" />
+          Reset to defaults
+        </Button>
       </div>
     </div>
   );
