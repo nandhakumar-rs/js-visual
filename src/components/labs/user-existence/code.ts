@@ -1,23 +1,24 @@
 import type { UserExistenceInputs } from "./types";
 
-export function getCode({ searchName, method }: UserExistenceInputs): string[] {
+export function getCode({ searchName, outcome }: UserExistenceInputs): string[] {
   const q = JSON.stringify(searchName);
-  switch (method) {
-    case "for":
+  switch (outcome) {
+    case "some":
+      return [`const exists = users.some(`, `  user => user.name === ${q}`, `);`];
+    case "find":
+      return [`const foundUser = users.find(`, `  user => user.name === ${q}`, `);`];
+    case "findIndex":
+      return [`const foundIndex = users.findIndex(`, `  user => user.name === ${q}`, `);`];
+    case "forOf":
       return [
-        "let found;",
-        "for (let i = 0; i < users.length; i++) {",
-        `  if (users[i] === ${q}) {`,
-        "    found = users[i];",
+        "let exists = false;",
+        "",
+        "for (const user of users) {",
+        `  if (user.name === ${q}) {`,
+        "    exists = true;",
         "    break;",
         "  }",
         "}",
       ];
-    case "some":
-      return [`const exists = users.some(name => name === ${q});`];
-    case "find":
-      return [`const user = users.find(name => name === ${q});`];
-    case "findIndex":
-      return [`const index = users.findIndex(name => name === ${q});`];
   }
 }

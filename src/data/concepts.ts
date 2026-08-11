@@ -62,13 +62,12 @@ export const concepts: Concept[] = [
     title: "Checking If a User Exists",
     section: "core",
     order: 5,
-    simpleDescription:
-      "for loops, some(), find(), and findIndex() can all search a list — the difference is what each one hands you back.",
+    simpleDescription: "Check whether at least one user in an array matches what we are looking for.",
     technicalDescription:
-      "some() short-circuits on the first truthy predicate result and returns a boolean; find() returns the first matching element (or undefined); findIndex() returns the first matching index (or -1); a manual for loop gives full control but requires explicit break logic.",
+      "`some()`, `find()`, and `findIndex()` all search an array with a predicate callback and stop at the first match — they differ only in what they return: a boolean, the matching element, or its index.",
     difficulty: "beginner",
     prerequisites: ["mapping-users"],
-    interviewQuestion: "When would you use find() instead of filter()[0]?",
+    interviewQuestion: "When would you use `find()` instead of `filter()[0]`?",
   },
   {
     id: "removing-duplicates",

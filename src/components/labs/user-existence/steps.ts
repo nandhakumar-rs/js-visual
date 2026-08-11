@@ -1,79 +1,71 @@
 import type { ExecutionStep } from "@/lib/execution/types";
 import type { UserExistenceInputs, UserExistenceStepState } from "./types";
 
+const PREDICATE_LINE = 2; // some()/find()/findIndex() shared shape
+const FOR_OF_IF_LINE = 4;
+const FOR_OF_MATCH_LINES = [4, 5, 6];
+
+function resultDescription(outcome: UserExistenceInputs["outcome"], matched: boolean, name: string, index: number): string {
+  switch (outcome) {
+    case "some":
+      return `exists = ${matched}`;
+    case "find":
+      return matched ? `foundUser = { name: "${name}" }` : "foundUser = undefined";
+    case "findIndex":
+      return `foundIndex = ${matched ? index : -1}`;
+    case "forOf":
+      return `exists = ${matched}`;
+  }
+}
+
 export function buildInitialSteps({
   users,
   searchName,
-  method,
+  outcome,
 }: UserExistenceInputs): ExecutionStep<UserExistenceStepState>[] {
-  const matchIndex = users.findIndex((u) => u === searchName);
-  const traversalLine = method === "for" ? 3 : 1;
-  const steps: ExecutionStep<UserExistenceStepState>[] = [];
-
+  const matchIndex = users.findIndex((u) => u.name === searchName);
   const lastVisited = matchIndex === -1 ? users.length - 1 : matchIndex;
+  const activeCodeLines = outcome === "forOf" ? [FOR_OF_IF_LINE] : [PREDICATE_LINE];
+
+  const steps: ExecutionStep<UserExistenceStepState>[] = [];
+  const checkedIndices: number[] = [];
 
   for (let i = 0; i <= lastVisited; i++) {
+    const user = users[i];
     const isMatch = i === matchIndex;
+    if (!isMatch) checkedIndices.push(i);
+
     steps.push({
       id: `visit-${i}`,
-      title: `Check "${users[i]}"`,
+      title: `Check "${user.name}"`,
       description: isMatch
-        ? `users[${i}] === "${searchName}" → true. The search can stop here.`
-        : `users[${i}] === "${searchName}" → false. Keep looking.`,
-      activeCodeLines: [traversalLine],
-      state: { visitedIndex: i, matchedIndex: isMatch ? i : -1 },
+        ? `"${user.name}" === "${searchName}" → true. The search can stop here.`
+        : `"${user.name}" === "${searchName}" → false. Keep looking.`,
+      activeCodeLines: isMatch && outcome === "forOf" ? FOR_OF_MATCH_LINES : activeCodeLines,
+      state: { checkedIndices: [...checkedIndices], matchedIndex: isMatch ? i : -1, stopped: false },
     });
   }
 
-  let returnValue: string;
-  switch (method) {
-    case "for":
-      returnValue = matchIndex === -1 ? "undefined" : `"${users[matchIndex]}"`;
-      break;
-    case "some":
-      returnValue = String(matchIndex !== -1);
-      break;
-    case "find":
-      returnValue = matchIndex === -1 ? "undefined" : `"${users[matchIndex]}"`;
-      break;
-    case "findIndex":
-      returnValue = String(matchIndex);
-      break;
+  const hasEarlyStop = matchIndex !== -1 && matchIndex < users.length - 1;
+  if (hasEarlyStop) {
+    steps.push({
+      id: "stop",
+      title: "Search stops here",
+      description: "One match is enough. The search stops here.",
+      activeCodeLines: outcome === "forOf" ? FOR_OF_MATCH_LINES : activeCodeLines,
+      state: { checkedIndices: [...checkedIndices], matchedIndex: matchIndex, stopped: true },
+    });
   }
 
-  const methodLabel = {
-    for: "found",
-    some: "exists",
-    find: "user",
-    findIndex: "index",
-  }[method];
-
+  const resultDesc = resultDescription(outcome, matchIndex !== -1, searchName, matchIndex);
   steps.push({
     id: "result",
     title: "Result",
-    description: `${methodLabel} = ${returnValue}`,
-    whyExplanation: methodExplanation(method, matchIndex !== -1),
-    activeCodeLines: [traversalLine],
-    consoleOutput: [{ id: "log-1", kind: "output", content: `${methodLabel} = ${returnValue}` }],
-    state: { visitedIndex: lastVisited, matchedIndex: matchIndex, returnValue },
+    description: resultDesc,
+    activeCodeLines: outcome === "forOf" ? [1] : [1],
+    consoleOutput: [{ id: "log-1", kind: "output", content: resultDesc }],
+    state: { checkedIndices: [...checkedIndices], matchedIndex: matchIndex, stopped: hasEarlyStop },
   });
 
   return steps;
-}
-
-function methodExplanation(method: UserExistenceInputs["method"], found: boolean): string {
-  switch (method) {
-    case "for":
-      return "A manual loop gives full control — you can break early, but you're responsible for tracking the result yourself.";
-    case "some":
-      return "some() only tells you whether a match exists (true/false) — it doesn't hand back the matching element itself.";
-    case "find":
-      return found
-        ? "find() returns the first matching element itself, or undefined if nothing matches."
-        : "find() returns undefined because nothing matched.";
-    case "findIndex":
-      return found
-        ? "findIndex() returns the position of the first match, or -1 if nothing matches."
-        : "findIndex() returns -1 because nothing matched.";
-  }
 }

@@ -1,13 +1,17 @@
-export type SearchMethod = "for" | "some" | "find" | "findIndex";
+export type SearchOutcome = "some" | "find" | "findIndex" | "forOf";
+
+export interface UserExistenceUser {
+  name: string;
+}
 
 export interface UserExistenceInputs {
-  users: string[];
+  users: UserExistenceUser[];
   searchName: string;
-  method: SearchMethod;
+  outcome: SearchOutcome;
 }
 
 export interface UserExistenceStepState {
-  visitedIndex: number;
+  checkedIndices: number[];
   matchedIndex: number;
-  returnValue?: string;
+  stopped: boolean;
 }
