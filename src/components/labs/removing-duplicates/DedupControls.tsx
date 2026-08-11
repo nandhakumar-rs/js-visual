@@ -9,10 +9,10 @@ import { Label } from "@/components/ui/label";
 import type { LabControlsProps } from "@/types/lab";
 import type { DedupInputs, DedupMethod, DedupStepState } from "./types";
 
-const METHODS: { value: DedupMethod; label: string }[] = [
-  { value: "set", label: "Set — keep one of each" },
-  { value: "filter", label: "filter — keep first occurrences" },
-  { value: "reduce", label: "reduce — build the result manually" },
+const METHODS: { value: DedupMethod; label: string; description: string }[] = [
+  { value: "set", label: "Set", description: "Set — keep one of each" },
+  { value: "filter", label: "filter", description: "filter — keep first occurrences" },
+  { value: "reduce", label: "reduce", description: "reduce — build the result manually" },
 ];
 
 const DEFAULT_INPUTS: DedupInputs = { values: [1, 2, 2, 3, 1], method: "set" };
@@ -72,6 +72,7 @@ export function DedupControls({ inputs, onInputsChange, engine }: LabControlsPro
         <div
           role="radiogroup"
           aria-label="How should we remove repeats?"
+          aria-describedby="dedup-method-description"
           className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
         >
           {METHODS.map((m) => (
@@ -92,6 +93,9 @@ export function DedupControls({ inputs, onInputsChange, engine }: LabControlsPro
             </button>
           ))}
         </div>
+        <p id="dedup-method-description" className="text-xs text-muted-foreground">
+          {METHODS.find((m) => m.value === inputs.method)?.description}
+        </p>
       </div>
 
       <div className="space-y-1">

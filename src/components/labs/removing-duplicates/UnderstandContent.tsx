@@ -29,11 +29,22 @@ function TermRow({ term, children }: { term: string; children: ReactNode }) {
   );
 }
 
-function FlowRow({ label, children }: { label: string; children: ReactNode }) {
+function Stage({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="space-y-1">
+    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border bg-card p-3 text-center">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
       {children}
+    </div>
+  );
+}
+
+function FlowArrow({ label }: { label: string }) {
+  return (
+    <div className="flex flex-row items-center justify-center gap-2 py-1 lg:flex-col lg:gap-1.5 lg:py-0">
+      <span className="rotate-90 text-muted-foreground lg:rotate-0" aria-hidden="true">
+        →
+      </span>
+      <span className="text-center text-xs text-muted-foreground lg:max-w-[6.5rem]">{label}</span>
     </div>
   );
 }
@@ -47,30 +58,30 @@ export function UnderstandContent() {
           each value.
         </p>
 
-        <div className="space-y-2 rounded-lg border border-border bg-card/50 p-3">
-          <FlowRow label="ORIGINAL ARRAY">
-            <div className="flex flex-wrap gap-1.5">
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:gap-3">
+          <Stage label="ORIGINAL ARRAY">
+            <div className="flex flex-wrap justify-center gap-1.5">
               {SOURCE.map((value, i) => (
                 <ValueChip key={i} value={value} isDuplicate={DUPLICATE_INDICES.has(i)} />
               ))}
             </div>
-          </FlowRow>
+          </Stage>
 
-          <p className="pl-1 text-xs text-muted-foreground">↓ keep first occurrences</p>
+          <FlowArrow label="keep first occurrences" />
 
-          <FlowRow label="SET — UNIQUE VALUES">
+          <Stage label="SET — UNIQUE VALUES">
             <p className="font-mono text-sm">{`Set(${UNIQUE.length}) { ${UNIQUE.join(", ")} }`}</p>
-          </FlowRow>
+          </Stage>
 
-          <p className="pl-1 text-xs text-muted-foreground">↓ spread into an array</p>
+          <FlowArrow label="spread into an array" />
 
-          <FlowRow label="NEW UNIQUE ARRAY">
-            <div className="flex flex-wrap gap-1.5">
+          <Stage label="NEW UNIQUE ARRAY">
+            <div className="flex flex-wrap justify-center gap-1.5">
               {UNIQUE.map((value, i) => (
                 <ValueChip key={i} value={value} />
               ))}
             </div>
-          </FlowRow>
+          </Stage>
         </div>
 
         <p className="text-sm text-muted-foreground">
@@ -80,22 +91,30 @@ export function UnderstandContent() {
         </p>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-border bg-card/50 p-3">
-        <div className="space-y-1.5">
-          <p className="text-center font-mono text-sm">const uniqueSet = new Set(values);</p>
-          <TermRow term="new Set(values)">reads the array values, one at a time</TermRow>
-          <TermRow term="uniqueSet">
-            keeps only one occurrence of each value — at this point it is a Set, not an array
-          </TermRow>
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto_1fr]">
+        <div className="space-y-1.5 rounded-lg border border-border bg-card p-3">
+          <p className="text-xs font-medium text-muted-foreground">STEP 1 — CREATE THE SET</p>
+          <p className="font-mono text-sm">const uniqueSet = new Set(values);</p>
+          <div className="space-y-1.5 pt-1">
+            <TermRow term="new Set(values)">reads the array values, one at a time</TermRow>
+            <TermRow term="uniqueSet">
+              keeps only one occurrence of each value — at this point it is a Set, not an array
+            </TermRow>
+          </div>
         </div>
 
-        <div className="space-y-1.5 border-t border-border pt-3">
-          <p className="text-center font-mono text-sm">const unique = [...uniqueSet];</p>
-          <TermRow term="...uniqueSet">takes the values back out of the Set</TermRow>
-          <TermRow term="[...]">collects those values into a new array</TermRow>
-          <TermRow term="unique">
-            receives <InlineCode>{`[${UNIQUE.join(", ")}]`}</InlineCode>
-          </TermRow>
+        <FlowArrow label="then" />
+
+        <div className="space-y-1.5 rounded-lg border border-border bg-card p-3">
+          <p className="text-xs font-medium text-muted-foreground">STEP 2 — CREATE THE NEW ARRAY</p>
+          <p className="font-mono text-sm">const unique = [...uniqueSet];</p>
+          <div className="space-y-1.5 pt-1">
+            <TermRow term="...uniqueSet">takes the values back out of the Set</TermRow>
+            <TermRow term="[...]">collects those values into a new array</TermRow>
+            <TermRow term="unique">
+              receives <InlineCode>{`[${UNIQUE.join(", ")}]`}</InlineCode>
+            </TermRow>
+          </div>
         </div>
       </div>
 
