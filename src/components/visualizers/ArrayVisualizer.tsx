@@ -16,6 +16,8 @@ export interface ArrayItemState {
 export interface ArrayVisualizerProps {
   items: ArrayItemState[];
   label?: string;
+  /** Small pill rendered next to `label`, e.g. "NEW". Omit for no visual change. */
+  badge?: string;
   emptyHint?: string;
   className?: string;
 }
@@ -29,10 +31,19 @@ const STATUS_STYLES: Record<ArrayItemStatus, string> = {
   added: "border-sky-500/50 bg-sky-500/10",
 };
 
-export function ArrayVisualizer({ items, label, emptyHint, className }: ArrayVisualizerProps) {
+export function ArrayVisualizer({ items, label, badge, emptyHint, className }: ArrayVisualizerProps) {
   return (
     <div className={cn("space-y-1.5", className)}>
-      {label && <p className="text-xs font-medium text-muted-foreground">{label}</p>}
+      {label && (
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          {label}
+          {badge && (
+            <span className="rounded-full bg-sky-500/15 px-1.5 py-0.5 text-[0.65rem] font-semibold text-sky-600 dark:text-sky-400">
+              {badge}
+            </span>
+          )}
+        </p>
+      )}
       <div className="flex min-h-14 flex-wrap items-center gap-2" role="list" aria-label={label}>
         <AnimatePresence initial={false}>
           {items.map((item) => (

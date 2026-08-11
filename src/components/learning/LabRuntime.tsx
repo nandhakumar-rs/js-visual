@@ -66,7 +66,9 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
         code={<CodePanel code={code} activeLines={engine.currentStep?.activeCodeLines ?? []} />}
         visualization={<lab.Visualization step={engine.currentStep} inputs={inputs} engine={engine} />}
         stepController={<StepController engine={engine} />}
-        consolePanel={<ConsolePanel entries={engine.consoleEntries} onClear={engine.reset} />}
+        consolePanel={
+          lab.showConsole === false ? undefined : <ConsolePanel entries={engine.consoleEntries} onClear={engine.reset} />
+        }
         whyPanel={<WhyPanel text={engine.currentStep?.whyExplanation ?? engine.currentStep?.description} />}
         explainSummary={lab.explainSummary}
         experiment={{

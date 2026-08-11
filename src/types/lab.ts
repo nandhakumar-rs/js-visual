@@ -50,6 +50,12 @@ export interface LabDefinition<TInputs = unknown, TState = Record<string, unknow
   explainSummary?: ExplainSummaryConfig;
   /** Short prompt shown above the inline "Try it yourself" experiment controls. */
   experimentPrompt?: string;
+  /**
+   * Set false to hide the console panel entirely, for lessons that are fully
+   * visualized without needing a console.log-style transcript. Defaults to
+   * true (shown) when omitted. Only affects the guided-layout branch.
+   */
+  showConsole?: boolean;
 }
 
 // Registry entries are heterogeneous in their TInputs/TState, so they're

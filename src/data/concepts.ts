@@ -23,9 +23,9 @@ export const concepts: Concept[] = [
     section: "core",
     order: 2,
     simpleDescription:
-      "array.map() walks through every item in a list and builds a brand new list out of whatever you return for each one.",
+      "`.map()` takes every item in an array, transforms it, and puts the results into a new array. Let's see how that works with a list of users.",
     technicalDescription:
-      "Array.prototype.map() creates a new array by invoking a callback once per element (in order, skipping holes) and collecting its return values, leaving the original array untouched.",
+      "`Array.prototype.map()` returns a new array by invoking a callback function once per element (in ascending index order, skipping holes in sparse arrays) and collecting each call's return value — the original array's length and contents are never mutated.",
     difficulty: "beginner",
     interviewQuestion: "What does .map() return, and does it change the original array?",
   },

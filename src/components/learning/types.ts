@@ -40,7 +40,14 @@ export interface IntuitionCardData {
 /** The "Experience" phase of a guided lesson: plain-language intro before any code. */
 export interface ExperienceConfig {
   prompt?: ReactNode;
-  cards: IntuitionCardData[];
+  cards?: IntuitionCardData[];
+  /**
+   * Rich custom composition for the Understand phase, rendered instead of
+   * the cards grid when present. Use for lessons whose pre-code intro needs
+   * more than the label/value/caption card shape (e.g. a multi-beat
+   * narrative with several visual moments).
+   */
+  content?: ReactNode;
 }
 
 /** The "Why?" phase of a guided lesson: a short, compact bullet-point summary. */
