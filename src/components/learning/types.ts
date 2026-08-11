@@ -58,6 +58,17 @@ export interface ExplainSummaryConfig {
   quirkNote?: ReactNode;
   /** Always-shown extra depth below the bullets — deepens, doesn't duplicate. Not gated by the Concept/Technical toggle. */
   technicalNote?: ReactNode;
-  /** Compact label/description comparison list, rendered distinctly from the bullet list (e.g. comparing a few named approaches). */
-  comparisonItems?: { label: string; description: ReactNode }[];
+  /**
+   * Compact comparison list, rendered distinctly from the bullet list (e.g.
+   * comparing a few named approaches). Each item is either a simple
+   * label + description (rendered as a 3-across card grid), or — when every
+   * item supplies `columns` — a compact responsive table with one row per
+   * item and a header row built from the first item's column headers.
+   */
+  comparisonItems?: {
+    label: string;
+    description?: ReactNode;
+    /** Up to ~3 short columns. When present, comparisonItems renders as a table instead of a card grid. */
+    columns?: { header: string; value: ReactNode }[];
+  }[];
 }

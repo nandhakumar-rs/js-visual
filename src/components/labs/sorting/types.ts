@@ -1,13 +1,20 @@
-export type SortMode = "default" | "numeric" | "immutable";
+export type SortMode = "default" | "asc" | "desc" | "immutable";
 
 export interface SortingInputs {
-  array: number[];
+  values: number[];
   mode: SortMode;
+}
+
+export interface SortingComparison {
+  a: number;
+  b: number;
+  result: number;
 }
 
 export interface SortingStepState {
   numbers: number[];
-  sorted?: number[];
-  compareIndices?: [number, number];
-  swapped?: boolean;
+  sorted: number[] | null;
+  compareValues: string[] | null;
+  comparisons: SortingComparison[] | null;
+  isFinal: boolean;
 }

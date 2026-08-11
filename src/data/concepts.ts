@@ -90,12 +90,13 @@ export const concepts: Concept[] = [
     section: "core",
     order: 7,
     simpleDescription:
-      "array.sort() compares items as text by default, so [10, 2, 5].sort() gives a surprising order — you need to tell it how to compare numbers.",
+      "Arrange values into an order, such as smallest to largest—but first decide how the values should be compared.",
     technicalDescription:
-      "Without a comparator, sort() converts elements to strings and compares UTF-16 code units; a comparator function (a, b) => a - b defines numeric ordering. sort() mutates and returns the original array; toSorted() (ES2023) returns a new sorted copy.",
+      "`sort()` mutates an array and compares string representations by default. A comparator controls numeric order, while `toSorted()` applies the same comparison rules without changing the source array.",
     difficulty: "beginner",
     prerequisites: ["removing-duplicates"],
-    interviewQuestion: "Why does [10, 2, 5].sort() not return [2, 5, 10], and does sort() mutate the array?",
+    interviewQuestion:
+      "Why does [10, 2, 5].sort() not produce numeric ascending order, and how do sort() and toSorted() differ?",
   },
   {
     id: "range",
