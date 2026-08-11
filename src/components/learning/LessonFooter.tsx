@@ -5,7 +5,9 @@ import { ChevronDown, MessageCircleQuestion, PenLine } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useExplanationMode } from "@/lib/ui-state/explanation-mode-store";
 import { ChallengeCard } from "./ChallengeCard";
+import { InlineCodeText } from "./InlineCodeText";
 import type { AnyLabDefinition } from "@/types/lab";
 import type { Concept } from "@/types/concept";
 
@@ -16,6 +18,10 @@ export interface LessonFooterProps {
 
 export function LessonFooter({ concept, lab }: LessonFooterProps) {
   const [answerOpen, setAnswerOpen] = useState(false);
+  // Interview-prep content is secondary in Concept mode — this product is a
+  // visual learning experience first, an interview-prep tool second.
+  const mode = useExplanationMode((s) => s.mode);
+  const showInterviewQuestion = mode === "technical" && concept.interviewQuestion;
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -27,11 +33,13 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">{lab.remember}</p>
+          <p className="text-sm text-muted-foreground">
+            <InlineCodeText text={lab.remember} />
+          </p>
         </CardContent>
       </Card>
 
-      {concept.interviewQuestion && (
+      {showInterviewQuestion && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -40,7 +48,9 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p className="text-sm text-muted-foreground">{concept.interviewQuestion}</p>
+            <p className="text-sm text-muted-foreground">
+              <InlineCodeText text={concept.interviewQuestion ?? ""} />
+            </p>
             <Button
               variant="outline"
               size="sm"
@@ -53,7 +63,7 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
             </Button>
             {answerOpen && (
               <p className="rounded-md bg-muted/50 p-3 text-sm text-muted-foreground">
-                {concept.technicalDescription}
+                <InlineCodeText text={concept.technicalDescription} />
               </p>
             )}
           </CardContent>

@@ -8,17 +8,18 @@ export function buildInitialSteps({ thirdValue }: NullUndefinedInputs): Executio
     {
       id: "declare",
       title: "Variables declared",
-      description: 'a has no value (undefined). b is intentionally set to "nothing" (null). c holds whatever you picked.',
+      description:
+        "`a` has no value yet (`undefined`). `b` intentionally has no value, on purpose (`null`). `c` holds whatever you picked.",
       whyExplanation:
-        "undefined means JavaScript doesn't currently have a value here. null means a programmer deliberately placed an empty value here.",
+        "`undefined` means JavaScript doesn't currently have a value here. `null` means a programmer deliberately chose to have no value here.",
       activeCodeLines: [1, 2, 3],
       state: { revealedTypeofs: [] },
     },
     {
       id: "typeof-a",
       title: "typeof a",
-      description: "a was declared but never assigned, so its type is reported as undefined.",
-      whyExplanation: "typeof a evaluates to \"undefined\" because no value was ever assigned to it.",
+      description: "`a` was declared but never assigned, so its type is reported as `undefined`.",
+      whyExplanation: "`typeof a` evaluates to `\"undefined\"` because no value was ever assigned to it.",
       activeCodeLines: [5],
       consoleOutput: [
         { id: "ta-1", kind: "command", content: "typeof a" },
@@ -29,9 +30,9 @@ export function buildInitialSteps({ thirdValue }: NullUndefinedInputs): Executio
     {
       id: "typeof-b",
       title: "typeof b",
-      description: 'Even though b is null, typeof b returns "object".',
+      description: "Even though `b` is `null`, `typeof b` returns `\"object\"`.",
       whyExplanation:
-        'typeof null === "object" is a long-standing bug in JavaScript from its very first version. null is NOT actually an object — this behavior is kept only for backwards compatibility.',
+        "`typeof null === \"object\"` is a long-standing bug in JavaScript from its very first version. `null` is NOT actually an object — this behavior is kept only for backwards compatibility.",
       activeCodeLines: [6],
       consoleOutput: [
         { id: "tb-1", kind: "command", content: "typeof b" },
@@ -42,8 +43,8 @@ export function buildInitialSteps({ thirdValue }: NullUndefinedInputs): Executio
     {
       id: "typeof-c",
       title: "typeof c",
-      description: `c was set to ${c.literal}, so typeof c reports "${c.typeofResult}".`,
-      whyExplanation: `${c.literal} is a real, concrete value with its own type — unlike a (no value) or b (intentionally empty).`,
+      description: `\`c\` was set to \`${c.literal}\`, so \`typeof c\` reports \`"${c.typeofResult}"\`.`,
+      whyExplanation: `\`${c.literal}\` is a real, concrete value with its own type — unlike \`a\` (no value yet) or \`b\` (no value on purpose).`,
       activeCodeLines: [7],
       consoleOutput: [
         { id: "tc-1", kind: "command", content: "typeof c" },

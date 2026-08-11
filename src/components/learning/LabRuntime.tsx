@@ -7,6 +7,7 @@ import { CodePanel } from "@/components/visualizers/CodePanel";
 import { ConsolePanel } from "@/components/visualizers/ConsolePanel";
 import { labRegistry } from "@/components/labs/registry";
 import { LessonShell } from "./LessonShell";
+import { GuidedLessonShell } from "./GuidedLessonShell";
 import { ExplanationPanel } from "./ExplanationPanel";
 import { WhyPanel } from "./WhyPanel";
 import { StepController } from "./StepController";
@@ -53,6 +54,31 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
   }, [inputs]);
 
   const code = useMemo(() => lab.getCode(inputs), [lab, inputs]);
+
+  if (lab.layout === "guided") {
+    return (
+      <GuidedLessonShell
+        concept={concept}
+        positionInSection={positionInSection}
+        totalInSection={totalInSection}
+        explanation={<ExplanationPanel concept={concept} />}
+        experience={lab.experience}
+        code={<CodePanel code={code} activeLines={engine.currentStep?.activeCodeLines ?? []} />}
+        visualization={<lab.Visualization step={engine.currentStep} inputs={inputs} engine={engine} />}
+        stepController={<StepController engine={engine} />}
+        consolePanel={<ConsolePanel entries={engine.consoleEntries} onClear={engine.reset} />}
+        whyPanel={<WhyPanel text={engine.currentStep?.whyExplanation ?? engine.currentStep?.description} />}
+        explainSummary={lab.explainSummary}
+        experiment={{
+          prompt: lab.experimentPrompt,
+          controls: <lab.Controls inputs={inputs} onInputsChange={setInputs} engine={engine} />,
+        }}
+        engine={engine}
+        prediction={lab.prediction && <PredictionCard prediction={lab.prediction} />}
+        footer={<LessonFooter concept={concept} lab={lab} />}
+      />
+    );
+  }
 
   return (
     <LessonShell

@@ -3,11 +3,25 @@ import type { Concept } from "@/types/concept";
 export const concepts: Concept[] = [
   // ───────────────────────── Core JavaScript ─────────────────────────
   {
+    id: "null-vs-undefined",
+    slug: "null-vs-undefined",
+    title: "null vs undefined",
+    section: "core",
+    order: 1,
+    simpleDescription:
+      "`undefined` means JavaScript doesn't have a value here yet. `null` means someone intentionally chose \"no value.\" Let's see the difference.",
+    technicalDescription:
+      "`undefined` is the default value for uninitialized variables — missing object properties and functions with no explicit `return` also evaluate to `undefined`. `null` is an explicitly assigned primitive value. `typeof null === \"object\"` is a historical JavaScript quirk kept for backward compatibility.",
+    difficulty: "beginner",
+    prerequisites: ["mapping-users"],
+    interviewQuestion: "What's the difference between null and undefined, and why does typeof null return \"object\"?",
+  },
+  {
     id: "mapping-users",
     slug: "mapping-users",
     title: "Mapping Users",
     section: "core",
-    order: 1,
+    order: 2,
     simpleDescription:
       "array.map() walks through every item in a list and builds a brand new list out of whatever you return for each one.",
     technicalDescription:
@@ -16,67 +30,11 @@ export const concepts: Concept[] = [
     interviewQuestion: "What does .map() return, and does it change the original array?",
   },
   {
-    id: "null-vs-undefined",
-    slug: "null-vs-undefined",
-    title: "null vs undefined",
-    section: "core",
-    order: 2,
-    simpleDescription:
-      "undefined means JavaScript hasn't given a variable a value yet. null means a person deliberately set it to \"nothing.\"",
-    technicalDescription:
-      "undefined is the default value of unassigned bindings, missing object properties, and functions without a return; null is a primitive value programmers assign explicitly. typeof null === \"object\" is a long-standing language bug kept for backwards compatibility.",
-    difficulty: "beginner",
-    prerequisites: ["mapping-users"],
-    interviewQuestion: "What's the difference between null and undefined, and why does typeof null return \"object\"?",
-  },
-  {
-    id: "hoisting",
-    slug: "hoisting",
-    title: "Hoisting",
-    section: "core",
-    order: 3,
-    simpleDescription:
-      "Before your code runs, JavaScript scans it and sets up all the variable and function names first — that's why some things seem to work before they're declared.",
-    technicalDescription:
-      "During the creation phase, var declarations are initialized to undefined and function declarations are fully hoisted; let and const bindings are created but left uninitialized, remaining inaccessible in the Temporal Dead Zone until their declaration executes.",
-    difficulty: "beginner",
-    prerequisites: ["null-vs-undefined"],
-    interviewQuestion: "Are let and const hoisted? What happens if you access them before their declaration?",
-  },
-  {
-    id: "closures",
-    slug: "closures",
-    title: "Closures",
-    section: "core",
-    order: 4,
-    simpleDescription:
-      "A closure is like a backpack a function carries around — it holds onto variables from the place where the function was created, even after that place is gone.",
-    technicalDescription:
-      "A closure is the combination of a function and references to its surrounding lexical environment, allowing the function to access those variables even after the outer function has returned.",
-    difficulty: "beginner",
-    prerequisites: ["hoisting"],
-    interviewQuestion: "What is a closure and where would you use one?",
-  },
-  {
-    id: "currying",
-    slug: "currying",
-    title: "Currying",
-    section: "core",
-    order: 5,
-    simpleDescription:
-      "Currying turns a function that takes many arguments into a chain of functions that each take one argument at a time.",
-    technicalDescription:
-      "Currying transforms a function of arity N into a sequence of N unary functions, each closing over the arguments supplied so far until all are collected and the original function is invoked.",
-    difficulty: "intermediate",
-    prerequisites: ["closures"],
-    interviewQuestion: "What is currying, and how would you implement multiply(2)(3)?",
-  },
-  {
     id: "immutable-arrays",
     slug: "immutable-arrays",
     title: "Adding Without Mutation",
     section: "core",
-    order: 6,
+    order: 3,
     simpleDescription:
       "push() changes the original array. Spreading into a new array ([...array, item]) leaves the original alone and hands you a fresh one.",
     technicalDescription:
@@ -90,7 +48,7 @@ export const concepts: Concept[] = [
     slug: "concatenating-arrays",
     title: "Concatenating Arrays",
     section: "core",
-    order: 7,
+    order: 4,
     simpleDescription:
       "Both .concat() and [...a, ...b] combine two arrays into a new one — neither changes the arrays you started with.",
     technicalDescription:
@@ -104,7 +62,7 @@ export const concepts: Concept[] = [
     slug: "user-existence",
     title: "Checking If a User Exists",
     section: "core",
-    order: 8,
+    order: 5,
     simpleDescription:
       "for loops, some(), find(), and findIndex() can all search a list — the difference is what each one hands you back.",
     technicalDescription:
@@ -118,7 +76,7 @@ export const concepts: Concept[] = [
     slug: "removing-duplicates",
     title: "Removing Duplicates",
     section: "core",
-    order: 9,
+    order: 6,
     simpleDescription:
       "A Set can only hold unique values, so dropping an array's items into one instantly removes duplicates.",
     technicalDescription:
@@ -132,7 +90,7 @@ export const concepts: Concept[] = [
     slug: "sorting",
     title: "Sorting",
     section: "core",
-    order: 10,
+    order: 7,
     simpleDescription:
       "array.sort() compares items as text by default, so [10, 2, 5].sort() gives a surprising order — you need to tell it how to compare numbers.",
     technicalDescription:
@@ -146,7 +104,7 @@ export const concepts: Concept[] = [
     slug: "range",
     title: "Range Function",
     section: "core",
-    order: 11,
+    order: 8,
     simpleDescription:
       "A range function builds a list of numbers between a start and an end, counting by a chosen step.",
     technicalDescription:
@@ -156,11 +114,25 @@ export const concepts: Concept[] = [
     interviewQuestion: "How would you implement range(2, 8, 1) without a library?",
   },
   {
+    id: "minimum-occurrences",
+    slug: "minimum-occurrences",
+    title: "Minimum Value Occurrences",
+    section: "core",
+    order: 9,
+    simpleDescription:
+      "First find the smallest number in a list, then count how many times that exact number shows up.",
+    technicalDescription:
+      "A single reduce (or two-pass loop) can compute Math.min(...array) and then filter the array against that minimum, counting matches — an O(n) two-phase traversal.",
+    difficulty: "beginner",
+    prerequisites: ["user-existence"],
+    interviewQuestion: "How would you count how many times the minimum value appears in an array?",
+  },
+  {
     id: "shuffle",
     slug: "shuffle",
     title: "Shuffle",
     section: "core",
-    order: 12,
+    order: 10,
     simpleDescription:
       "To shuffle a list fairly, walk backward through it and repeatedly swap the current item with a random earlier one — that's the Fisher–Yates algorithm.",
     technicalDescription:
@@ -170,18 +142,46 @@ export const concepts: Concept[] = [
     interviewQuestion: "Why is array.sort(() => Math.random() - 0.5) not a correct shuffle?",
   },
   {
-    id: "minimum-occurrences",
-    slug: "minimum-occurrences",
-    title: "Minimum Value Occurrences",
+    id: "modules",
+    slug: "modules",
+    title: "Modules",
+    section: "core",
+    order: 11,
+    simpleDescription:
+      "Modules let you split code across files and explicitly choose what to share (export) and what to use from elsewhere (import).",
+    technicalDescription:
+      "ES Modules are statically analyzable: import/export bindings are resolved at parse time (enabling tree-shaking) and are live read-only views onto the exporting module's bindings, unlike CommonJS's require()/module.exports, which copies values at runtime.",
+    difficulty: "beginner",
+    prerequisites: ["closures"],
+    interviewQuestion: "What's the difference between a named export and a default export?",
+  },
+  {
+    id: "classes",
+    slug: "classes",
+    title: "Classes",
+    section: "core",
+    order: 12,
+    simpleDescription:
+      "A class is a template for creating objects that share the same methods, with a constructor that sets up each new instance's own data.",
+    technicalDescription:
+      "Class syntax is sugar over JavaScript's prototypal inheritance: methods defined in a class body live on the class's prototype (shared, not copied per instance), extends wires up the prototype chain, and super invokes the parent constructor or method.",
+    difficulty: "intermediate",
+    prerequisites: ["this"],
+    interviewQuestion: "What does extends actually set up under the hood?",
+  },
+  {
+    id: "prototypes",
+    slug: "prototypes",
+    title: "Prototypes",
     section: "core",
     order: 13,
     simpleDescription:
-      "First find the smallest number in a list, then count how many times that exact number shows up.",
+      "When you access a property JavaScript can't find on an object, it keeps looking up a chain of \"parent\" objects called prototypes until it finds it or runs out.",
     technicalDescription:
-      "A single reduce (or two-pass loop) can compute Math.min(...array) and then filter the array against that minimum, counting matches — an O(n) two-phase traversal.",
-    difficulty: "beginner",
-    prerequisites: ["user-existence"],
-    interviewQuestion: "How would you count how many times the minimum value appears in an array?",
+      "Every object has an internal [[Prototype]] link (exposed via Object.getPrototypeOf / __proto__). Property lookup walks this prototype chain until the property is found or the chain ends at null; this is the mechanism classes are built on top of.",
+    difficulty: "intermediate",
+    prerequisites: ["classes"],
+    interviewQuestion: "Walk through what happens when you call maya.greet() and greet isn't an own property.",
   },
   {
     id: "this",
@@ -198,46 +198,46 @@ export const concepts: Concept[] = [
     interviewQuestion: "What determines the value of this inside a regular function versus an arrow function?",
   },
   {
-    id: "classes",
-    slug: "classes",
-    title: "Classes",
+    id: "hoisting",
+    slug: "hoisting",
+    title: "Hoisting",
     section: "core",
     order: 15,
     simpleDescription:
-      "A class is a template for creating objects that share the same methods, with a constructor that sets up each new instance's own data.",
+      "Before your code runs, JavaScript scans it and sets up all the variable and function names first — that's why some things seem to work before they're declared.",
     technicalDescription:
-      "Class syntax is sugar over JavaScript's prototypal inheritance: methods defined in a class body live on the class's prototype (shared, not copied per instance), extends wires up the prototype chain, and super invokes the parent constructor or method.",
-    difficulty: "intermediate",
-    prerequisites: ["this"],
-    interviewQuestion: "What does extends actually set up under the hood?",
+      "During the creation phase, var declarations are initialized to undefined and function declarations are fully hoisted; let and const bindings are created but left uninitialized, remaining inaccessible in the Temporal Dead Zone until their declaration executes.",
+    difficulty: "beginner",
+    prerequisites: ["null-vs-undefined"],
+    interviewQuestion: "Are let and const hoisted? What happens if you access them before their declaration?",
   },
   {
-    id: "prototypes",
-    slug: "prototypes",
-    title: "Prototypes",
+    id: "closures",
+    slug: "closures",
+    title: "Closures",
     section: "core",
     order: 16,
     simpleDescription:
-      "When you access a property JavaScript can't find on an object, it keeps looking up a chain of \"parent\" objects called prototypes until it finds it or runs out.",
+      "A closure is like a backpack a function carries around — it holds onto variables from the place where the function was created, even after that place is gone.",
     technicalDescription:
-      "Every object has an internal [[Prototype]] link (exposed via Object.getPrototypeOf / __proto__). Property lookup walks this prototype chain until the property is found or the chain ends at null; this is the mechanism classes are built on top of.",
-    difficulty: "intermediate",
-    prerequisites: ["classes"],
-    interviewQuestion: "Walk through what happens when you call maya.greet() and greet isn't an own property.",
+      "A closure is the combination of a function and references to its surrounding lexical environment, allowing the function to access those variables even after the outer function has returned.",
+    difficulty: "beginner",
+    prerequisites: ["hoisting"],
+    interviewQuestion: "What is a closure and where would you use one?",
   },
   {
-    id: "modules",
-    slug: "modules",
-    title: "Modules",
+    id: "currying",
+    slug: "currying",
+    title: "Currying",
     section: "core",
     order: 17,
     simpleDescription:
-      "Modules let you split code across files and explicitly choose what to share (export) and what to use from elsewhere (import).",
+      "Currying turns a function that takes many arguments into a chain of functions that each take one argument at a time.",
     technicalDescription:
-      "ES Modules are statically analyzable: import/export bindings are resolved at parse time (enabling tree-shaking) and are live read-only views onto the exporting module's bindings, unlike CommonJS's require()/module.exports, which copies values at runtime.",
-    difficulty: "beginner",
+      "Currying transforms a function of arity N into a sequence of N unary functions, each closing over the arguments supplied so far until all are collected and the original function is invoked.",
+    difficulty: "intermediate",
     prerequisites: ["closures"],
-    interviewQuestion: "What's the difference between a named export and a default export?",
+    interviewQuestion: "What is currying, and how would you implement multiply(2)(3)?",
   },
   {
     id: "debounce",
@@ -270,24 +270,11 @@ export const concepts: Concept[] = [
 
   // ───────────────────────── Working with DOM ─────────────────────────
   {
-    id: "highlight-long-words",
-    slug: "highlight-long-words",
-    title: "Highlight Long Words",
-    section: "dom",
-    order: 1,
-    simpleDescription:
-      "You can scan a block of text word by word and wrap the long ones in a <mark> tag so the browser highlights them.",
-    technicalDescription:
-      "Splitting text on whitespace, testing each token's length against a threshold, and rebuilding the string with <mark> wrappers before assigning it via innerHTML re-renders the DOM subtree with the new markup.",
-    difficulty: "beginner",
-    interviewQuestion: "How would you highlight every word longer than N characters in a paragraph?",
-  },
-  {
     id: "add-a-link",
     slug: "add-a-link",
     title: "Add a Link",
     section: "dom",
-    order: 2,
+    order: 1,
     simpleDescription:
       "Building an element in JavaScript is a few separate steps: create it, set its properties, then attach it to the page.",
     technicalDescription:
@@ -295,6 +282,19 @@ export const concepts: Concept[] = [
     difficulty: "beginner",
     prerequisites: ["highlight-long-words"],
     interviewQuestion: "What's the difference between setting innerHTML and using createElement + appendChild?",
+  },
+  {
+    id: "highlight-long-words",
+    slug: "highlight-long-words",
+    title: "Highlight Long Words",
+    section: "dom",
+    order: 2,
+    simpleDescription:
+      "You can scan a block of text word by word and wrap the long ones in a <mark> tag so the browser highlights them.",
+    technicalDescription:
+      "Splitting text on whitespace, testing each token's length against a threshold, and rebuilding the string with <mark> wrappers before assigning it via innerHTML re-renders the DOM subtree with the new markup.",
+    difficulty: "beginner",
+    interviewQuestion: "How would you highlight every word longer than N characters in a paragraph?",
   },
   {
     id: "split-sentences",
@@ -327,11 +327,25 @@ export const concepts: Concept[] = [
 
   // ───────────────────────── Asynchronous JavaScript ─────────────────────────
   {
+    id: "callbacks",
+    slug: "callbacks",
+    title: "Callbacks",
+    section: "async",
+    order: 1,
+    simpleDescription:
+      "A callback is just a function you hand to another function, to be called later once some work finishes.",
+    technicalDescription:
+      "Callback-based async APIs invoke a caller-supplied function upon completion (success or error), predating Promises; deeply nested callbacks for sequential async steps produce the well-known \"callback hell\" pattern.",
+    difficulty: "beginner",
+    prerequisites: ["closures"],
+    interviewQuestion: "What problem do Promises solve that callbacks don't handle well?",
+  },
+  {
     id: "xhr",
     slug: "xhr",
     title: "XMLHttpRequest",
     section: "async",
-    order: 1,
+    order: 2,
     simpleDescription:
       "XMLHttpRequest is the original way browsers made network requests from JavaScript, before fetch() existed.",
     technicalDescription:
@@ -344,7 +358,7 @@ export const concepts: Concept[] = [
     slug: "fetch",
     title: "Fetch API",
     section: "async",
-    order: 2,
+    order: 3,
     simpleDescription:
       "fetch() sends a network request and gives you back a Promise that eventually resolves with the response, or rejects if something goes wrong.",
     technicalDescription:
@@ -354,39 +368,11 @@ export const concepts: Concept[] = [
     interviewQuestion: "Does fetch()'s promise reject on a 404 response?",
   },
   {
-    id: "callbacks",
-    slug: "callbacks",
-    title: "Callbacks",
-    section: "async",
-    order: 3,
-    simpleDescription:
-      "A callback is just a function you hand to another function, to be called later once some work finishes.",
-    technicalDescription:
-      "Callback-based async APIs invoke a caller-supplied function upon completion (success or error), predating Promises; deeply nested callbacks for sequential async steps produce the well-known \"callback hell\" pattern.",
-    difficulty: "beginner",
-    prerequisites: ["closures"],
-    interviewQuestion: "What problem do Promises solve that callbacks don't handle well?",
-  },
-  {
-    id: "parallel-async",
-    slug: "parallel-async",
-    title: "Parallel vs Sequential",
-    section: "async",
-    order: 4,
-    simpleDescription:
-      "Running async tasks one after another adds up their times; starting them all at once means you only wait as long as the slowest one.",
-    technicalDescription:
-      "Awaiting each async call individually serializes them, summing their durations; starting all operations first (e.g. via Promise.all) lets them run concurrently on the event loop, bounding total time by the longest single operation.",
-    difficulty: "intermediate",
-    prerequisites: ["callbacks"],
-    interviewQuestion: "Why is Promise.all([a(), b()]) usually faster than await a(); await b();?",
-  },
-  {
     id: "callback-to-promise",
     slug: "callback-to-promise",
     title: "Callback → Promise",
     section: "async",
-    order: 5,
+    order: 4,
     simpleDescription:
       "Any callback-based function can be wrapped so it returns a Promise instead, by resolving or rejecting inside the callback.",
     technicalDescription:
@@ -396,25 +382,11 @@ export const concepts: Concept[] = [
     interviewQuestion: "How would you convert a callback-based function into one that returns a Promise?",
   },
   {
-    id: "promise-all",
-    slug: "promise-all",
-    title: "Promise.all + Mapping Data",
-    section: "async",
-    order: 6,
-    simpleDescription:
-      "Promise.all lets you fire off several requests at once and wait until every single one finishes before moving on.",
-    technicalDescription:
-      "Promise.all(iterable) returns a single Promise that fulfills with an array of results once every input Promise fulfills, or rejects immediately with the first rejection reason (short-circuiting the rest).",
-    difficulty: "intermediate",
-    prerequisites: ["parallel-async"],
-    interviewQuestion: "What happens to the other promises if one promise passed to Promise.all() rejects?",
-  },
-  {
     id: "async-await",
     slug: "async-await",
     title: "Async / Await",
     section: "async",
-    order: 7,
+    order: 5,
     simpleDescription:
       "async/await lets you write asynchronous code that reads top-to-bottom like synchronous code, without JavaScript actually stopping and waiting.",
     technicalDescription:
@@ -422,6 +394,34 @@ export const concepts: Concept[] = [
     difficulty: "intermediate",
     prerequisites: ["promise-all"],
     interviewQuestion: "Does await block the JavaScript thread while waiting for a promise?",
+  },
+  {
+    id: "parallel-async",
+    slug: "parallel-async",
+    title: "Parallel vs Sequential",
+    section: "async",
+    order: 6,
+    simpleDescription:
+      "Running async tasks one after another adds up their times; starting them all at once means you only wait as long as the slowest one.",
+    technicalDescription:
+      "Awaiting each async call individually serializes them, summing their durations; starting all operations first (e.g. via Promise.all) lets them run concurrently on the event loop, bounding total time by the longest single operation.",
+    difficulty: "intermediate",
+    prerequisites: ["callbacks"],
+    interviewQuestion: "Why is Promise.all([a(), b()]) usually faster than await a(); await b();?",
+  },
+  {
+    id: "promise-all",
+    slug: "promise-all",
+    title: "Promise.all + Mapping Data",
+    section: "async",
+    order: 7,
+    simpleDescription:
+      "Promise.all lets you fire off several requests at once and wait until every single one finishes before moving on.",
+    technicalDescription:
+      "Promise.all(iterable) returns a single Promise that fulfills with an array of results once every input Promise fulfills, or rejects immediately with the first rejection reason (short-circuiting the rest).",
+    difficulty: "intermediate",
+    prerequisites: ["parallel-async"],
+    interviewQuestion: "What happens to the other promises if one promise passed to Promise.all() rejects?",
   },
   {
     id: "retry",

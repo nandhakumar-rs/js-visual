@@ -1,7 +1,12 @@
 import type { ComponentType } from "react";
 import type { ExecutionEngine } from "@/lib/execution/useExecutionEngine";
 import type { ExecutionStep } from "@/lib/execution/types";
-import type { ChallengeConfig, PredictionConfig } from "@/components/learning/types";
+import type {
+  ChallengeConfig,
+  ExperienceConfig,
+  ExplainSummaryConfig,
+  PredictionConfig,
+} from "@/components/learning/types";
 
 export interface LabControlsProps<TInputs, TState = Record<string, unknown>> {
   inputs: TInputs;
@@ -33,6 +38,18 @@ export interface LabDefinition<TInputs = unknown, TState = Record<string, unknow
   prediction?: PredictionConfig;
   challenge: ChallengeConfig;
   remember: string;
+
+  /**
+   * Omit (or "classic") to render via LessonShell exactly as today. "guided"
+   * renders via GuidedLessonShell's phase-ordered layout (Understand → Watch
+   * it work → Why? → Test yourself → Challenge) — only opt in when
+   * experience/explainSummary are also supplied.
+   */
+  layout?: "classic" | "guided";
+  experience?: ExperienceConfig;
+  explainSummary?: ExplainSummaryConfig;
+  /** Short prompt shown above the inline "Try it yourself" experiment controls. */
+  experimentPrompt?: string;
 }
 
 // Registry entries are heterogeneous in their TInputs/TState, so they're

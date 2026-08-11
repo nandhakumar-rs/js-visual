@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface ChoiceOption {
   id: string;
   label: string;
@@ -23,4 +25,30 @@ export interface ChallengeConfig {
   options: ChoiceOption[];
   correctOptionId: string;
   explanation: string;
+}
+
+export type IntuitionCardTone = "muted" | "highlight" | "positive";
+
+export interface IntuitionCardData {
+  id: string;
+  label: string;
+  value: string;
+  caption: string;
+  tone?: IntuitionCardTone;
+}
+
+/** The "Experience" phase of a guided lesson: plain-language intro before any code. */
+export interface ExperienceConfig {
+  prompt?: ReactNode;
+  cards: IntuitionCardData[];
+}
+
+/** The "Why?" phase of a guided lesson: a short, compact bullet-point summary. */
+export interface ExplainSummaryConfig {
+  title?: string;
+  bullets: ReactNode[];
+  /** Always-shown highlighted callout below the bullets, e.g. a language quirk. */
+  quirkNote?: ReactNode;
+  /** Extra depth shown only in Technical explanation mode — deepens, doesn't duplicate. */
+  technicalNote?: ReactNode;
 }

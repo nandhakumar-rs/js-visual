@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Braces } from "lucide-react";
 import { SearchCommand } from "./SearchCommand";
-import { ExplanationModeToggle } from "./ExplanationModeToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { JsDictionary } from "./JsDictionary";
 
@@ -17,7 +16,6 @@ export function AppHeader() {
         <div className="flex-1" />
 
         <SearchCommand />
-        <ExplanationModeToggle />
         <JsDictionary />
         <ThemeToggle />
       </div>

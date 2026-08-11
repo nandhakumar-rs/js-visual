@@ -17,6 +17,9 @@ const OPTIONS: { value: ThirdValueOption; label: string }[] = [
   { value: "0", label: "0" },
   { value: "empty-string", label: '"" (empty string)' },
   { value: "false", label: "false" },
+  { value: "nan", label: "NaN" },
+  { value: "array", label: "[] (empty array)" },
+  { value: "function", label: "() => {} (a function)" },
 ];
 
 export function NullUndefinedControls({
@@ -25,13 +28,15 @@ export function NullUndefinedControls({
 }: LabControlsProps<NullUndefinedInputs, NullUndefinedStepState>) {
   return (
     <div className="max-w-56 space-y-1">
-      <Label htmlFor="third-value">Assign c =</Label>
+      <Label htmlFor="third-value">Choose a value for c</Label>
       <Select
         value={inputs.thirdValue}
         onValueChange={(v) => onInputsChange({ thirdValue: v as ThirdValueOption })}
       >
         <SelectTrigger id="third-value">
-          <SelectValue />
+          <SelectValue>
+            {(value: ThirdValueOption) => OPTIONS.find((o) => o.value === value)?.label ?? value}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {OPTIONS.map((o) => (

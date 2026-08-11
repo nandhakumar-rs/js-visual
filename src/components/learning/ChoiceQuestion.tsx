@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CodePanel } from "@/components/visualizers/CodePanel";
+import { InlineCodeText } from "./InlineCodeText";
 import type { ChoiceOption } from "./types";
 
 export interface ChoiceQuestionProps {
@@ -51,7 +52,11 @@ export function ChoiceQuestion({
 
   return (
     <div className="space-y-3">
-      {prompt && <p className="text-sm font-medium">{prompt}</p>}
+      {prompt && (
+        <p className="text-sm font-medium">
+          <InlineCodeText text={prompt} />
+        </p>
+      )}
       {code && <CodePanel code={code} title="" showLineNumbers={false} />}
 
       <div className="flex flex-col gap-2" role="radiogroup" aria-label={prompt ?? "Answer options"}>
@@ -103,7 +108,9 @@ export function ChoiceQuestion({
             {correct ? `✅ Correct ${resultNoun}` : `Your ${resultNoun}: ${options.find((o) => o.id === selected)?.label} ❌`}
           </p>
           {actualResultLabel && <p className="text-muted-foreground">{actualResultLabel}</p>}
-          <p className="text-muted-foreground">{explanation}</p>
+          <p className="text-muted-foreground">
+            <InlineCodeText text={explanation} />
+          </p>
           <Button size="sm" variant="ghost" onClick={handleRetry} className="mt-1 h-7 px-2 text-xs">
             Try another answer
           </Button>

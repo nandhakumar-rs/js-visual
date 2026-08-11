@@ -3,6 +3,7 @@
 import { Brain } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { InlineCodeText } from "./InlineCodeText";
 
 export interface WhyPanelProps {
   text?: string;
@@ -30,7 +31,7 @@ export function WhyPanel({ text, className }: WhyPanelProps) {
           transition={{ duration: 0.2 }}
           className="text-sm text-muted-foreground"
         >
-          {text ?? "Run the code or step through it to see an explanation here."}
+          {text ? <InlineCodeText text={text} /> : "Run the code or step through it to see an explanation here."}
         </motion.p>
       </AnimatePresence>
     </div>

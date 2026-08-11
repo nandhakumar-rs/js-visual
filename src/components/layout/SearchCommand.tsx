@@ -12,7 +12,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { concepts } from "@/data/concepts";
+import { getConceptsBySection } from "@/data/concepts";
 import { SECTION_META } from "@/types/concept";
 
 export function SearchCommand() {
@@ -59,7 +59,7 @@ export function SearchCommand() {
         <CommandList>
           <CommandEmpty>No concepts found.</CommandEmpty>
           {(Object.keys(SECTION_META) as Array<keyof typeof SECTION_META>).map((section) => {
-            const items = concepts.filter((c) => c.section === section);
+            const items = getConceptsBySection(section);
             if (items.length === 0) return null;
             return (
               <CommandGroup key={section} heading={SECTION_META[section].title}>

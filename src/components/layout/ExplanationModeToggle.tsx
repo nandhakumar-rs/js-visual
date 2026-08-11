@@ -27,7 +27,7 @@ export function ExplanationModeToggle() {
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          {option}
+          {option === "simple" ? "Concept" : "Technical"}
         </button>
       ))}
     </div>

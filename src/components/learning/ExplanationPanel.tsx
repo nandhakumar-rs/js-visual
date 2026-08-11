@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { useExplanationMode } from "@/lib/ui-state/explanation-mode-store";
+import { ExplanationModeToggle } from "@/components/layout/ExplanationModeToggle";
+import { InlineCodeText } from "./InlineCodeText";
 import type { Concept } from "@/types/concept";
 
 export interface ExplanationPanelProps {
@@ -13,7 +15,8 @@ export function ExplanationPanel({ concept }: ExplanationPanelProps) {
   const text = mode === "simple" ? concept.simpleDescription : concept.technicalDescription;
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl space-y-2">
+      <ExplanationModeToggle />
       <AnimatePresence mode="wait" initial={false}>
         <motion.p
           key={mode}
@@ -23,7 +26,7 @@ export function ExplanationPanel({ concept }: ExplanationPanelProps) {
           transition={{ duration: 0.15 }}
           className="text-base text-muted-foreground sm:text-lg"
         >
-          {text}
+          <InlineCodeText text={text} />
         </motion.p>
       </AnimatePresence>
     </div>
