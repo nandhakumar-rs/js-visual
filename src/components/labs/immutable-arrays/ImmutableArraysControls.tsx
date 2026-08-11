@@ -7,8 +7,9 @@ import type { LabControlsProps } from "@/types/lab";
 import type { ImmutableArrayInputs, ImmutableArrayStepState, MutationMode } from "./types";
 
 const MODES: { value: MutationMode; label: string }[] = [
-  { value: "push", label: "array.push()" },
-  { value: "spread", label: "[...array, x]" },
+  { value: "push", label: "Change original (push)" },
+  { value: "spread", label: "Create new array (spread)" },
+  { value: "both", label: "Show both (comparison)" },
 ];
 
 export function ImmutableArraysControls({
@@ -16,10 +17,14 @@ export function ImmutableArraysControls({
   onInputsChange,
 }: LabControlsProps<ImmutableArrayInputs, ImmutableArrayStepState>) {
   return (
-    <div className="flex flex-wrap items-end gap-4">
+    <div className="flex flex-wrap items-start gap-4">
       <div className="space-y-1.5">
-        <p className="text-sm font-medium">Operation</p>
-        <div role="radiogroup" aria-label="Operation" className="inline-flex gap-1 rounded-lg border border-border bg-muted/30 p-1">
+        <Label>How should we add it?</Label>
+        <div
+          role="radiogroup"
+          aria-label="How should we add it?"
+          className="inline-flex gap-1 rounded-lg border border-border bg-muted/30 p-1"
+        >
           {MODES.map((m) => (
             <button
               key={m.value}
@@ -28,7 +33,7 @@ export function ImmutableArraysControls({
               aria-checked={inputs.mode === m.value}
               onClick={() => onInputsChange({ ...inputs, mode: m.value })}
               className={cn(
-                "rounded-md px-3 py-1.5 font-mono text-sm transition-colors",
+                "rounded-md px-3 py-1.5 text-sm transition-colors",
                 inputs.mode === m.value
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"

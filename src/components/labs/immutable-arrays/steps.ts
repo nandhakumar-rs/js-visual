@@ -1,69 +1,91 @@
 import type { ExecutionStep } from "@/lib/execution/types";
 import type { ImmutableArrayInputs, ImmutableArrayStepState } from "./types";
 
-export function buildInitialSteps({ mode, newValue }: ImmutableArrayInputs): ExecutionStep<ImmutableArrayStepState>[] {
+export function buildInitialSteps({
+  newValue,
+  mode,
+}: ImmutableArrayInputs): ExecutionStep<ImmutableArrayStepState>[] {
   const base = [1, 2, 3];
+  const pushed = [...base, newValue];
+  const updated = [...base, newValue];
 
-  if (mode === "push") {
-    return [
-      {
-        id: "seed",
-        title: "array created",
-        description: "array points to a single array object in memory: [1, 2, 3].",
-        activeCodeLines: [1],
-        state: { array: base, sameReference: true },
-      },
-      {
-        id: "push",
-        title: `array.push(${newValue})`,
-        description: `push() adds ${newValue} to the SAME array object and returns the new length — array itself now has 4 items.`,
-        whyExplanation:
-          "push() mutates the array in place. There's still only one array object; array just has more items in it now than before.",
-        activeCodeLines: [2],
-        state: { array: [...base, newValue], sameReference: true },
-      },
-      {
-        id: "log",
-        title: "console.log(array)",
-        description: `array now logs [${[...base, newValue].join(", ")}] — the original array was changed.`,
-        activeCodeLines: [4],
-        consoleOutput: [
-          { id: "log-1", kind: "command", content: "console.log(array)" },
-          { id: "log-2", kind: "output", content: `[${[...base, newValue].join(", ")}]` },
-        ],
-        state: { array: [...base, newValue], sameReference: true },
-      },
-    ];
-  }
-
-  const newArray = [...base, newValue];
-  return [
+  const pushSteps: ExecutionStep<ImmutableArrayStepState>[] = [
     {
-      id: "seed",
-      title: "array created",
-      description: "array points to a single array object in memory: [1, 2, 3].",
+      id: "push-seed",
+      title: "We start with one array",
+      description: "We start with `array`, holding `[1, 2, 3]`.",
+      whyExplanation: "Nothing has run yet — this is just the starting array.",
       activeCodeLines: [1],
-      state: { array: base, sameReference: true },
+      state: { phase: "push-seed", array: base, original: base },
     },
     {
-      id: "spread",
-      title: `[...array, ${newValue}]`,
-      description: `The spread operator copies every element of array into a brand new array, then adds ${newValue}. array itself is never touched.`,
+      id: "push-run",
+      title: `array.push(${newValue})`,
+      description: `\`push()\` adds \`${newValue}\` directly to the existing array.`,
+      whyExplanation: "`push()` mutates the array it's called on — no new array is created.",
+      activeCodeLines: [3],
+      state: { phase: "push-done", array: pushed, original: base },
+    },
+    {
+      id: "push-log",
+      title: "console.log(array)",
+      description: "The original array itself changed.",
       whyExplanation:
-        "Spreading into a new array literal creates a completely new array object. newArray and array are now two separate objects that happen to share some values.",
-      activeCodeLines: [2],
-      state: { array: base, newArray, sameReference: false },
-    },
-    {
-      id: "log",
-      title: "console.log(array, newArray)",
-      description: `array is still [${base.join(", ")}]; newArray is [${newArray.join(", ")}].`,
+        "Because `push()` mutated `array` in place, logging `array` now shows the new item too.",
       activeCodeLines: [4],
       consoleOutput: [
-        { id: "log-1", kind: "command", content: "console.log(array, newArray)" },
-        { id: "log-2", kind: "output", content: `[${base.join(", ")}] [${newArray.join(", ")}]` },
+        { id: "push-log-1", kind: "command", content: "console.log(array)" },
+        { id: "push-log-2", kind: "output", content: `[${pushed.join(", ")}]` },
       ],
-      state: { array: base, newArray, sameReference: false },
+      state: { phase: "push-done", array: pushed, original: base },
+    },
+  ];
+
+  const spreadSteps: ExecutionStep<ImmutableArrayStepState>[] = [
+    {
+      id: "spread-seed",
+      title: "Now, without changing the original",
+      description: `Now let's add \`${newValue}\` without changing the original array.`,
+      whyExplanation: "This time we'll create a new array instead of mutating the old one.",
+      activeCodeLines: [6],
+      state: { phase: "spread-seed", array: base, original: base },
+    },
+    {
+      id: "spread-run",
+      title: `[...original, ${newValue}]`,
+      description: `\`...original\` copies the existing items into a new array, then \`${newValue}\` is added after them.`,
+      whyExplanation:
+        "Spreading into a new array literal creates a brand new array object — `original` itself is never touched.",
+      activeCodeLines: [7],
+      state: { phase: "spread-done", array: base, original: base, updated },
+    },
+    {
+      id: "spread-log",
+      title: "console.log(original, updated)",
+      description: `\`original\` is still \`[${base.join(", ")}]\`; \`updated\` is \`[${updated.join(", ")}]\`.`,
+      whyExplanation: "Two separate arrays now exist — the old one, untouched, and a new one with the added value.",
+      activeCodeLines: [8],
+      consoleOutput: [
+        { id: "spread-log-1", kind: "command", content: "console.log(original, updated)" },
+        { id: "spread-log-2", kind: "output", content: `[${base.join(", ")}] [${updated.join(", ")}]` },
+      ],
+      state: { phase: "spread-done", array: base, original: base, updated },
+    },
+  ];
+
+  if (mode === "push") return pushSteps;
+  if (mode === "spread") return spreadSteps;
+
+  return [
+    ...pushSteps,
+    ...spreadSteps,
+    {
+      id: "comparison",
+      title: "push() vs. spread — side by side",
+      description: "`push()` changed the same array. Spread created a new one and left the original alone.",
+      whyExplanation: "If the old array must stay unchanged, create a new array instead of mutating the existing one.",
+      activeCodeLines: [3, 4, 7, 8],
+      state: { phase: "comparison", array: pushed, original: base, updated },
     },
   ];
 }

@@ -14,7 +14,7 @@ export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefine
   defaultInputs: { thirdValue: "0" },
   getCode,
   buildInitialSteps,
-  Controls: NullUndefinedControls,
+  simulationControls: NullUndefinedControls,
   Visualization: NullUndefinedVisualization,
 
   experience: {
@@ -77,8 +77,6 @@ export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefine
       </>
     ),
   },
-
-  experimentPrompt: "Pick a different value for `c`, then run it again to see how the walkthrough changes.",
 
   prediction: {
     code: ["let user = null;", "console.log(typeof user);"],

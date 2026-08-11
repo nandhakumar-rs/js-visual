@@ -85,16 +85,19 @@ export function StepControls({
         Reset
       </Button>
 
-      <Select value={String(speed)} onValueChange={(v) => onSpeedChange(Number(v) as EngineSpeed)}>
-        <SelectTrigger size="sm" className="ml-auto w-20" aria-label="Playback speed">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="0.5">0.5x</SelectItem>
-          <SelectItem value="1">1x</SelectItem>
-          <SelectItem value="2">2x</SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="ml-auto flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">Speed</span>
+        <Select value={String(speed)} onValueChange={(v) => onSpeedChange(Number(v) as EngineSpeed)}>
+          <SelectTrigger size="sm" className="w-20" aria-label="Playback speed">
+            <SelectValue>{(value: string) => `${value}×`}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0.5">0.5×</SelectItem>
+            <SelectItem value="1">1×</SelectItem>
+            <SelectItem value="2">2×</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }

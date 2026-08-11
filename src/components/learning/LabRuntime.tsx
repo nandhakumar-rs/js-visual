@@ -65,17 +65,17 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
         experience={lab.experience}
         code={<CodePanel code={code} activeLines={engine.currentStep?.activeCodeLines ?? []} />}
         visualization={<lab.Visualization step={engine.currentStep} inputs={inputs} engine={engine} />}
+        simulationControls={
+          lab.simulationControls && (
+            <lab.simulationControls inputs={inputs} onInputsChange={setInputs} engine={engine} />
+          )
+        }
         stepController={<StepController engine={engine} />}
         consolePanel={
           lab.showConsole === false ? undefined : <ConsolePanel entries={engine.consoleEntries} onClear={engine.reset} />
         }
         whyPanel={<WhyPanel text={engine.currentStep?.whyExplanation ?? engine.currentStep?.description} />}
         explainSummary={lab.explainSummary}
-        experiment={{
-          prompt: lab.experimentPrompt,
-          controls: <lab.Controls inputs={inputs} onInputsChange={setInputs} engine={engine} />,
-        }}
-        engine={engine}
         prediction={lab.prediction && <PredictionCard prediction={lab.prediction} />}
         footer={<LessonFooter concept={concept} lab={lab} />}
       />
@@ -91,7 +91,7 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
       controls={
         <div className="space-y-4">
           {lab.prediction && <PredictionCard prediction={lab.prediction} />}
-          <lab.Controls inputs={inputs} onInputsChange={setInputs} engine={engine} />
+          {lab.Controls && <lab.Controls inputs={inputs} onInputsChange={setInputs} engine={engine} />}
         </div>
       }
       code={<CodePanel code={code} activeLines={engine.currentStep?.activeCodeLines ?? []} />}

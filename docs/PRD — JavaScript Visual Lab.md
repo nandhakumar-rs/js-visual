@@ -365,6 +365,8 @@ Examples:
 
 Users should modify something that affects execution.
 
+Simulation-changing parameters (values, methods, options that affect what the walkthrough demonstrates) must be available next to the player from the beginning — not gated behind completing a walkthrough. Do not add a generic "Walkthrough complete / Try it yourself / Run again" block; the player itself is the experiment surface.
+
 ---
 
 ## 9.3 Code Viewer

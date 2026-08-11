@@ -23,7 +23,7 @@ export const mappingUsersLab: LabDefinition<MappingInputs, MappingStepState> = {
   },
   getCode,
   buildInitialSteps,
-  Controls: MappingUsersControls,
+  simulationControls: MappingUsersControls,
   Visualization: MappingUsersVisualization,
 
   experience: {
@@ -53,8 +53,6 @@ export const mappingUsersLab: LabDefinition<MappingInputs, MappingStepState> = {
       </>
     ),
   },
-
-  experimentPrompt: "Pick `name` or `age`, then run it again to watch the new array change.",
 
   prediction: {
     code: [

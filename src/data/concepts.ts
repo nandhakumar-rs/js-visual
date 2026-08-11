@@ -36,9 +36,9 @@ export const concepts: Concept[] = [
     section: "core",
     order: 3,
     simpleDescription:
-      "push() changes the original array. Spreading into a new array ([...array, item]) leaves the original alone and hands you a fresh one.",
+      "Sometimes we want to add something to an array. We can either change the existing array, or create a new array and leave the original alone. Let's see the difference.",
     technicalDescription:
-      "push() mutates the array in place and returns the new length, keeping the same reference; the spread operator copies existing elements into a new array object, preserving reference identity of the original for frameworks that rely on it (e.g. React).",
+      "`Array.prototype.push()` mutates the array in place and returns its new length, keeping the same reference. The spread operator (`[...array, item]`) copies existing elements into a new array object — a shallow copy, so nested objects inside the array are still shared with the original. This preserves reference identity for the original array, which matters in frameworks like React that detect changes by reference.",
     difficulty: "beginner",
     prerequisites: ["mapping-users"],
     interviewQuestion: "Why might you prefer [...array, item] over array.push(item)?",

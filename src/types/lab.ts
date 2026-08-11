@@ -33,7 +33,8 @@ export interface LabDefinition<TInputs = unknown, TState = Record<string, unknow
   defaultInputs: TInputs;
   getCode: (inputs: TInputs) => string[];
   buildInitialSteps: (inputs: TInputs) => ExecutionStep<TState>[];
-  Controls: ComponentType<LabControlsProps<TInputs, TState>>;
+  /** Classic layout only — guided labs configure entirely through `simulationControls` instead. */
+  Controls?: ComponentType<LabControlsProps<TInputs, TState>>;
   Visualization: ComponentType<LabVisualizationProps<TInputs, TState>>;
   prediction?: PredictionConfig;
   challenge: ChallengeConfig;
@@ -48,8 +49,14 @@ export interface LabDefinition<TInputs = unknown, TState = Record<string, unknow
   layout?: "classic" | "guided";
   experience?: ExperienceConfig;
   explainSummary?: ExplainSummaryConfig;
-  /** Short prompt shown above the inline "Try it yourself" experiment controls. */
-  experimentPrompt?: string;
+  /**
+   * Guided layout only. Renders always-visible, above the code/visualization
+   * split, for controls that configure what the walkthrough demonstrates
+   * (e.g. picking an operation or a value). Available from the start — the
+   * guided layout has no gated "try it yourself" step; the player itself is
+   * the experiment surface.
+   */
+  simulationControls?: ComponentType<LabControlsProps<TInputs, TState>>;
   /**
    * Set false to hide the console panel entirely, for lessons that are fully
    * visualized without needing a console.log-style transcript. Defaults to
