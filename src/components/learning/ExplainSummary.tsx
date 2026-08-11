@@ -2,7 +2,6 @@
 
 import { Lightbulb, Sparkle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useExplanationMode } from "@/lib/ui-state/explanation-mode-store";
 import type { ExplainSummaryConfig } from "./types";
 
 export interface ExplainSummaryProps extends ExplainSummaryConfig {
@@ -12,9 +11,9 @@ export interface ExplainSummaryProps extends ExplainSummaryConfig {
 /**
  * Generic bullet-list explanation card for a guided lesson's "Why?" phase —
  * short, compact, and reusable by future lessons with their own bullet
- * content (which may itself embed InfoTooltips). `quirkNote` is a small
- * always-shown callout; `technicalNote` only appears in Technical mode, so
- * Technical mode deepens the same lesson rather than duplicating it.
+ * content (which may itself embed InfoTooltips). `quirkNote` and
+ * `technicalNote` are both always-shown callouts — only the page's top
+ * intro text depends on the Concept/Technical toggle.
  */
 export function ExplainSummary({
   title = "What's really going on",
@@ -23,8 +22,6 @@ export function ExplainSummary({
   technicalNote,
   className,
 }: ExplainSummaryProps) {
-  const mode = useExplanationMode((s) => s.mode);
-
   return (
     <Card className={className}>
       <CardHeader>
@@ -47,7 +44,7 @@ export function ExplainSummary({
             {quirkNote}
           </div>
         )}
-        {mode === "technical" && technicalNote && (
+        {technicalNote && (
           <div className="flex items-start gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
             <Sparkle className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
             <span>{technicalNote}</span>

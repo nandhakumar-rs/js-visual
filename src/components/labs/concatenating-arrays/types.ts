@@ -6,8 +6,13 @@ export interface ConcatArraysInputs {
   mode: ConcatMode;
 }
 
+export interface ConcatResultItem {
+  value: number;
+  source: "a" | "b";
+}
+
 export interface ConcatArraysStepState {
   a: number[];
   b: number[];
-  result?: number[];
+  result: ConcatResultItem[];
 }

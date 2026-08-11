@@ -5,7 +5,6 @@ import { ChevronDown, MessageCircleQuestion, PenLine } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useExplanationMode } from "@/lib/ui-state/explanation-mode-store";
 import { ChallengeCard } from "./ChallengeCard";
 import { InlineCodeText } from "./InlineCodeText";
 import type { AnyLabDefinition } from "@/types/lab";
@@ -18,14 +17,11 @@ export interface LessonFooterProps {
 
 export function LessonFooter({ concept, lab }: LessonFooterProps) {
   const [answerOpen, setAnswerOpen] = useState(false);
-  // Interview-prep content is secondary in Concept mode — this product is a
-  // visual learning experience first, an interview-prep tool second.
-  const mode = useExplanationMode((s) => s.mode);
-  const showInterviewQuestion = mode === "technical" && concept.interviewQuestion;
+  const showInterviewQuestion = Boolean(concept.interviewQuestion);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <PenLine className="size-4 text-primary" />
@@ -40,7 +36,7 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
       </Card>
 
       {showInterviewQuestion && (
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <MessageCircleQuestion className="size-4 text-primary" />
@@ -70,7 +66,7 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
         </Card>
       )}
 
-      <div className="md:col-span-2">
+      <div className="min-w-0 md:col-span-2">
         <ChallengeCard slug={concept.slug} challenge={lab.challenge} />
       </div>
     </div>

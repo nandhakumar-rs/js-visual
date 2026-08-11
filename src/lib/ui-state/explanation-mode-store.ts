@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 export type ExplanationMode = "simple" | "technical";
 
@@ -9,19 +8,12 @@ interface ExplanationModeState {
   toggle: () => void;
 }
 
-export const useExplanationMode = create<ExplanationModeState>()(
-  persist(
-    (set, get) => ({
-      mode: "simple",
-      setMode: (mode) => set({ mode }),
-      toggle: () =>
-        set({ mode: get().mode === "simple" ? "technical" : "simple" }),
-    }),
-    {
-      name: "jsvl-explanation-mode",
-      // Rehydrated manually post-mount (see StoreHydration) so the server
-      // render and first client render always agree on the default value.
-      skipHydration: true,
-    }
-  )
-);
+// Deliberately not persisted to localStorage — Concept mode is always the
+// default on a fresh page load, for every lesson, regardless of what a
+// learner previously selected in an earlier session. Toggling still applies
+// normally within the current session (client-side lesson navigation).
+export const useExplanationMode = create<ExplanationModeState>()((set, get) => ({
+  mode: "simple",
+  setMode: (mode) => set({ mode }),
+  toggle: () => set({ mode: get().mode === "simple" ? "technical" : "simple" }),
+}));

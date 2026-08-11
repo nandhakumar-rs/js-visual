@@ -11,60 +11,6 @@ export function ImmutableArraysVisualization({
 }: LabVisualizationProps<ImmutableArrayInputs, ImmutableArrayStepState>) {
   const state = step?.state ?? { phase: "push-seed", array: [1, 2, 3], original: [1, 2, 3] };
 
-  if (step?.id === "comparison") {
-    return (
-      <div className="space-y-4">
-        <div className="space-y-1.5">
-          <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            <InlineCode>push()</InlineCode>
-            <StateBadge tone="changed">SAME ARRAY CHANGED</StateBadge>
-          </p>
-          <ArrayVisualizer
-            label="array"
-            items={state.array.map((v, i) => ({
-              id: `cmp-a-${i}`,
-              label: String(v),
-              status: i >= 3 ? "added" : "default",
-            }))}
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <p className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            spread
-            <span className="inline-flex items-center gap-1.5">
-              <InlineCode>original</InlineCode>
-              <StateBadge tone="neutral">UNCHANGED</StateBadge>
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <InlineCode>updated</InlineCode>
-              <StateBadge tone="new">NEW</StateBadge>
-            </span>
-          </p>
-          <ArrayVisualizer
-            label="original"
-            items={state.original.map((v, i) => ({ id: `cmp-o-${i}`, label: String(v) }))}
-          />
-          <ArrayVisualizer
-            label="updated"
-            items={(state.updated ?? []).map((v, i) => ({
-              id: `cmp-u-${i}`,
-              label: String(v),
-              status: i >= 3 ? "added" : "default",
-            }))}
-          />
-        </div>
-
-        <div className="rounded-lg border border-border bg-muted/30 p-3 text-center text-sm">
-          <p>
-            <InlineCode>push()</InlineCode> → same array changed.
-          </p>
-          <p className="text-xs text-muted-foreground">spread → original unchanged, new array created.</p>
-        </div>
-      </div>
-    );
-  }
-
   if (state.phase === "push-seed" || state.phase === "push-done") {
     return (
       <div className="space-y-1.5">

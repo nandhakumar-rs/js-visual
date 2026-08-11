@@ -74,7 +74,11 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
         consolePanel={
           lab.showConsole === false ? undefined : <ConsolePanel entries={engine.consoleEntries} onClear={engine.reset} />
         }
-        whyPanel={<WhyPanel text={engine.currentStep?.whyExplanation ?? engine.currentStep?.description} />}
+        whyPanel={
+          lab.showWhyPanel === false ? undefined : (
+            <WhyPanel text={engine.currentStep?.whyExplanation ?? engine.currentStep?.description} />
+          )
+        }
         explainSummary={lab.explainSummary}
         prediction={lab.prediction && <PredictionCard prediction={lab.prediction} />}
         footer={<LessonFooter concept={concept} lab={lab} />}

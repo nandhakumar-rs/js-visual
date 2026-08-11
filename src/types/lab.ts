@@ -63,6 +63,13 @@ export interface LabDefinition<TInputs = unknown, TState = Record<string, unknow
    * true (shown) when omitted. Only affects the guided-layout branch.
    */
   showConsole?: boolean;
+  /**
+   * Set false to hide the separate "Why did this happen?" card in the player
+   * area, for lessons whose per-step description (shown in the step
+   * controller) already stands alone without a second, near-duplicate
+   * explanation. Defaults to true (shown) when omitted. Guided layout only.
+   */
+  showWhyPanel?: boolean;
 }
 
 // Registry entries are heterogeneous in their TInputs/TState, so they're

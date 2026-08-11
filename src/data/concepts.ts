@@ -49,13 +49,12 @@ export const concepts: Concept[] = [
     title: "Concatenating Arrays",
     section: "core",
     order: 4,
-    simpleDescription:
-      "Both .concat() and [...a, ...b] combine two arrays into a new one — neither changes the arrays you started with.",
+    simpleDescription: "Join two arrays in order to create one new array.",
     technicalDescription:
-      "Array.prototype.concat() and spread syntax both perform a shallow copy merge, producing a new array reference while the source arrays' references are left untouched.",
+      "`Array.prototype.concat()` returns a new array without mutating its receiver or its arguments; `[...a, ...b]` builds a new array literal by spreading each source's values into it. Both are shallow — nested objects inside the arrays are still shared with the originals — and while they produce the same result for simple values, they are not universally equivalent operations.",
     difficulty: "beginner",
     prerequisites: ["immutable-arrays"],
-    interviewQuestion: "Does a.concat(b) modify a or b?",
+    interviewQuestion: "Do `concat()` and `[...a, ...b]` mutate the source arrays, and are the values inside deeply cloned?",
   },
   {
     id: "user-existence",

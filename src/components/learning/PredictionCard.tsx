@@ -25,7 +25,7 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
           options={prediction.options}
           correctOptionId={prediction.correctOptionId}
           explanation={prediction.explanation}
-          submitLabel="Run JavaScript"
+          submitLabel="Check answer"
           resultNoun="prediction"
         />
       </CardContent>

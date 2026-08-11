@@ -9,7 +9,6 @@ import type { ImmutableArrayInputs, ImmutableArrayStepState, MutationMode } from
 const MODES: { value: MutationMode; label: string }[] = [
   { value: "push", label: "Change original (push)" },
   { value: "spread", label: "Create new array (spread)" },
-  { value: "both", label: "Show both (comparison)" },
 ];
 
 export function ImmutableArraysControls({
@@ -18,12 +17,12 @@ export function ImmutableArraysControls({
 }: LabControlsProps<ImmutableArrayInputs, ImmutableArrayStepState>) {
   return (
     <div className="flex flex-wrap items-start gap-4">
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <Label>How should we add it?</Label>
         <div
           role="radiogroup"
           aria-label="How should we add it?"
-          className="inline-flex gap-1 rounded-lg border border-border bg-muted/30 p-1"
+          className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
         >
           {MODES.map((m) => (
             <button
@@ -33,7 +32,7 @@ export function ImmutableArraysControls({
               aria-checked={inputs.mode === m.value}
               onClick={() => onInputsChange({ ...inputs, mode: m.value })}
               className={cn(
-                "rounded-md px-3 py-1.5 text-sm transition-colors",
+                "rounded-md px-3 py-1 text-sm transition-colors",
                 inputs.mode === m.value
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
