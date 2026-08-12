@@ -1,15 +1,17 @@
 "use client";
 
 import { nanoid } from "nanoid";
-import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { DelegationMode, EventDelegationInputs, EventDelegationStepState } from "./types";
 
-const MODES: { value: DelegationMode; label: string }[] = [
-  { value: "individual", label: "Individual listeners" },
-  { value: "delegation", label: "Event delegation" },
-];
+const MODES: readonly DelegationMode[] = ["individual", "delegation"];
+
+const MODE_LABEL: Record<DelegationMode, string> = {
+  individual: "Individual listeners",
+  delegation: "Event delegation",
+};
 
 export function EventDelegationControls({
   inputs,
@@ -50,25 +52,15 @@ export function EventDelegationControls({
 
   return (
     <div className="space-y-3">
-      <div role="radiogroup" aria-label="Listener strategy" className="inline-flex gap-1 rounded-lg border border-border bg-muted/30 p-1">
-        {MODES.map((m) => (
-          <button
-            key={m.value}
-            type="button"
-            role="radio"
-            aria-checked={inputs.mode === m.value}
-            onClick={() => onInputsChange({ ...inputs, mode: m.value })}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm transition-colors",
-              inputs.mode === m.value
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        label="Listener strategy"
+        size="md"
+        labelAs="none"
+        options={MODES}
+        value={inputs.mode}
+        onChange={(mode) => onInputsChange({ ...inputs, mode })}
+        optionLabel={(mode) => MODE_LABEL[mode]}
+      />
 
       <ScrollArea className="h-48 rounded-md border border-border">
         <ul className="grid grid-cols-2 gap-1 p-2 sm:grid-cols-4">

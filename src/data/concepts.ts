@@ -289,6 +289,8 @@ export const concepts: Concept[] = [
     difficulty: "beginner",
     prerequisites: ["hoisting"],
     interviewQuestion: "What is a closure and where would you use one?",
+    interviewAnswer:
+      "A closure is a function together with the lexical environment it was created in, which lets it keep using those variables after the outer call has returned. A closure is created per call, not per function, so each call to a factory returns a function with its own private state. That is what makes counters, once-only handlers, function factories and module-style private variables possible without putting anything in a shared outer scope.",
   },
   {
     id: "currying",

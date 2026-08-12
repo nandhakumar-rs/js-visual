@@ -195,6 +195,12 @@
   html {
     @apply font-sans;
   }
+  /* Tailwind v4's preflight leaves <button> at cursor: default. Everything
+     clickable in this app should read as clickable. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,18 +2,26 @@
 
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { DedupInputs, DedupMethod, DedupStepState } from "./types";
 
-const METHODS: { value: DedupMethod; label: string; description: string }[] = [
-  { value: "set", label: "Set", description: "Set — keep one of each" },
-  { value: "filter", label: "filter", description: "filter — keep first occurrences" },
-  { value: "reduce", label: "reduce", description: "reduce — build the result manually" },
-];
+const METHODS: readonly DedupMethod[] = ["set", "filter", "reduce"];
+
+const METHOD_LABEL: Record<DedupMethod, string> = {
+  set: "Set",
+  filter: "filter",
+  reduce: "reduce",
+};
+
+const METHOD_DESCRIPTION: Record<DedupMethod, string> = {
+  set: "Set — keep one of each",
+  filter: "filter — keep first occurrences",
+  reduce: "reduce — build the result manually",
+};
 
 const DEFAULT_INPUTS: DedupInputs = { values: [1, 2, 2, 3, 1], method: "set" };
 const DEFAULT_TEXT = "1, 2, 2, 3, 1";
@@ -67,36 +75,16 @@ export function DedupControls({ inputs, onInputsChange, engine }: LabControlsPro
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
-      <div className="space-y-1">
-        <Label>How should we remove repeats?</Label>
-        <div
-          role="radiogroup"
-          aria-label="How should we remove repeats?"
-          aria-describedby="dedup-method-description"
-          className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
-        >
-          {METHODS.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              role="radio"
-              aria-checked={inputs.method === m.value}
-              onClick={() => onInputsChange({ ...inputs, method: m.value })}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                inputs.method === m.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-        <p id="dedup-method-description" className="text-xs text-muted-foreground">
-          {METHODS.find((m) => m.value === inputs.method)?.description}
-        </p>
-      </div>
+      <SegmentedControl
+        label="How should we remove repeats?"
+        size="md"
+        labelAs="label"
+        options={METHODS}
+        value={inputs.method}
+        onChange={(method) => onInputsChange({ ...inputs, method })}
+        optionLabel={(method) => METHOD_LABEL[method]}
+        description={METHOD_DESCRIPTION[inputs.method]}
+      />
 
       <div className="space-y-1">
         <div className="h-3.5" aria-hidden />

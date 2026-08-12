@@ -30,6 +30,7 @@ export function CodePanel({
   const [copied, setCopied] = useState(false);
   const { resolvedTheme } = useTheme();
   const source = code.join("\n");
+  const activeSet = new Set(activeLines);
   const prismTheme = resolvedTheme === "light" ? LIGHT_THEME : DARK_THEME;
 
   async function handleCopy() {
@@ -65,7 +66,14 @@ export function CodePanel({
           >
             {tokens.map((line, i) => {
               const lineNumber = i + 1;
-              const isActive = activeLines.includes(lineNumber);
+              const isActive = activeSet.has(lineNumber);
+              // A run of consecutive active lines is drawn as one block: the
+              // shared edges lose their border and their corner radius, so
+              // neighbours join instead of stacking two outlines on top of
+              // each other. The border is transparent (never absent) on every
+              // line, so nothing shifts as the highlight moves.
+              const continuesAbove = isActive && activeSet.has(lineNumber - 1);
+              const continuesBelow = isActive && activeSet.has(lineNumber + 1);
               const { className: lineClassName, ...lineProps } = getLineProps({ line });
               return (
                 <div
@@ -73,8 +81,10 @@ export function CodePanel({
                   {...lineProps}
                   className={cn(
                     lineClassName,
-                    "px-2 -mx-2 rounded transition-colors duration-200",
-                    isActive && "bg-primary/15 ring-1 ring-primary/40"
+                    "-mx-2 rounded border border-transparent px-2 transition-colors duration-200",
+                    isActive && "border-primary/40 bg-primary/15",
+                    continuesAbove && "rounded-t-none border-t-transparent",
+                    continuesBelow && "rounded-b-none border-b-transparent"
                   )}
                 >
                   {showLineNumbers && (

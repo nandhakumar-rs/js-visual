@@ -1,35 +1,27 @@
 "use client";
 
-import { useExplanationMode } from "@/lib/ui-state/explanation-mode-store";
-import { cn } from "@/lib/utils";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
+import { useExplanationMode, type ExplanationMode } from "@/lib/ui-state/explanation-mode-store";
+
+const MODES: readonly ExplanationMode[] = ["simple", "technical"];
+
+const MODE_LABEL: Record<ExplanationMode, string> = {
+  simple: "Concept",
+  technical: "Technical",
+};
 
 export function ExplanationModeToggle() {
   const mode = useExplanationMode((s) => s.mode);
   const setMode = useExplanationMode((s) => s.setMode);
 
   return (
-    <div
-      role="radiogroup"
-      aria-label="Explanation detail level"
-      className="inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5 text-xs"
-    >
-      {(["simple", "technical"] as const).map((option) => (
-        <button
-          key={option}
-          type="button"
-          role="radio"
-          aria-checked={mode === option}
-          onClick={() => setMode(option)}
-          className={cn(
-            "rounded px-2.5 py-1 capitalize transition-colors",
-            mode === option
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {option === "simple" ? "Concept" : "Technical"}
-        </button>
-      ))}
-    </div>
+    <SegmentedControl
+      label="Explanation detail level"
+      labelAs="none"
+      options={MODES}
+      value={mode}
+      onChange={setMode}
+      optionLabel={(option) => MODE_LABEL[option]}
+    />
   );
 }

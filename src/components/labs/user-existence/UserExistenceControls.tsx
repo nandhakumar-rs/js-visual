@@ -2,21 +2,23 @@
 
 import { useState } from "react";
 import { Info, RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { InlineCode } from "@/components/learning/InlineCode";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { SearchOutcome, UserExistenceInputs, UserExistenceStepState } from "./types";
 
-const OUTCOMES: { value: SearchOutcome; label: string }[] = [
-  { value: "some", label: "Yes or no — some()" },
-  { value: "find", label: "Matching user — find()" },
-  { value: "findIndex", label: "Position — findIndex()" },
-  { value: "forOf", label: "Manual search — for...of" },
-];
+const OUTCOMES: readonly SearchOutcome[] = ["some", "find", "findIndex", "forOf"];
+
+const OUTCOME_LABEL: Record<SearchOutcome, string> = {
+  some: "Yes or no — some()",
+  find: "Matching user — find()",
+  findIndex: "Position — findIndex()",
+  forOf: "Manual search — for...of",
+};
 
 const DEFAULT_INPUTS: UserExistenceInputs = {
   users: [{ name: "Alex" }, { name: "Maya" }, { name: "John" }, { name: "Priya" }],
@@ -75,32 +77,15 @@ export function UserExistenceControls({
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
-      <div className="space-y-1">
-        <Label>What do you need back?</Label>
-        <div
-          role="radiogroup"
-          aria-label="What do you need back?"
-          className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
-        >
-          {OUTCOMES.map((o) => (
-            <button
-              key={o.value}
-              type="button"
-              role="radio"
-              aria-checked={inputs.outcome === o.value}
-              onClick={() => onInputsChange({ ...inputs, outcome: o.value })}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                inputs.outcome === o.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <SegmentedControl
+        label="What do you need back?"
+        size="md"
+        labelAs="label"
+        options={OUTCOMES}
+        value={inputs.outcome}
+        onChange={(outcome) => onInputsChange({ ...inputs, outcome })}
+        optionLabel={(outcome) => OUTCOME_LABEL[outcome]}
+      />
 
       <div className="space-y-1">
         <div className="h-3.5" aria-hidden />

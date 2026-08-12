@@ -1,17 +1,20 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 
-const groupVariants = cva("flex flex-wrap rounded-lg border border-border bg-muted/30", {
+// w-fit keeps the track the width of its pills instead of stretching across
+// the whole control bar, while still allowing the pills to wrap onto a second
+// row when the container is genuinely narrower than the content.
+const groupVariants = cva("flex w-fit flex-wrap rounded-lg border border-border bg-muted/30", {
   variants: {
     size: {
       sm: "gap-1 p-1",
-      // h-8 matches the Input primitive, so a control bar can put pills and
-      // text fields on the same row without them disagreeing in height.
-      md: "h-8 items-center gap-1 p-0.5",
+      // min-h-8 (not h-8) matches the Input primitive's height on the common
+      // single-row case, without clipping a second row when the pills wrap.
+      md: "min-h-8 items-center gap-1 p-0.5",
     },
   },
   defaultVariants: { size: "sm" },
@@ -26,8 +29,12 @@ const optionVariants = cva(
         md: "px-3 py-1 text-sm",
       },
       active: {
-        true: "bg-background text-foreground shadow-sm",
-        false: "text-muted-foreground hover:text-foreground",
+        // A primary tint plus a primary outline, not a lifted surface: in the
+        // dark theme --background and --card are the same token, so a
+        // surface-based "selected" state is invisible against the card the
+        // control bar sits on. The ring is what carries the state at a glance.
+        true: "bg-primary/15 font-semibold text-foreground ring-1 ring-primary/60",
+        false: "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
       },
     },
     defaultVariants: { size: "sm", active: false },
@@ -48,23 +55,30 @@ export interface SegmentedControlProps<T extends string> extends VariantProps<ty
    *               where it sits alongside <Label>-ed Input fields.
    * - "caption" — a muted text-xs caption. Use inside an experiment panel,
    *               whose surrounding copy is text-xs.
+   * - "none"    — nothing visible; `label` is still the group's aria-label.
+   *               Use for chrome toggles that are clear from context.
    */
-  labelAs?: "label" | "caption";
+  labelAs?: "label" | "caption" | "none";
+  /**
+   * Helper text below the group, describing the currently selected option.
+   * Wired to the group with aria-describedby.
+   */
+  description?: ReactNode;
   className?: string;
 }
 
 /**
- * The pill radiogroup used by every guided lesson, in two sizes.
+ * The pill radiogroup used everywhere this app offers a small set of mutually
+ * exclusive choices, in two sizes.
  *
- * Convention across the JavaScript Foundations lessons:
- * - control bars (`LabDefinition.simulationControls`) use size="md" with
- *   labelAs="label", matching the Input/Label pairs beside them;
+ * Convention:
+ * - control bars (`LabDefinition.simulationControls`, classic `Controls`) use
+ *   size="md" with labelAs="label", matching the Input/Label pairs beside them;
  * - experiment panels (`LabDefinition.experimentPanel`) use size="sm" with
  *   labelAs="caption", matching their text-xs surroundings.
  *
- * Options never wrap mid-label (`whitespace-nowrap`), and the group fills its
- * column rather than shrinking to fit, so a narrow container stacks the pills
- * instead of squeezing them.
+ * Options never wrap mid-label (`whitespace-nowrap`), and the group is sized to
+ * its content, so a narrow container stacks the pills instead of squeezing them.
  */
 export function SegmentedControl<T extends string>({
   label,
@@ -75,16 +89,21 @@ export function SegmentedControl<T extends string>({
   mono,
   size = "sm",
   labelAs = "caption",
+  description,
   className,
 }: SegmentedControlProps<T>) {
+  const descriptionId = useId();
+
   return (
     <div className={cn("min-w-0", size === "md" ? "space-y-1" : "space-y-1.5", className)}>
-      {labelAs === "label" ? (
-        <Label>{label}</Label>
-      ) : (
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      )}
-      <div role="radiogroup" aria-label={label} className={groupVariants({ size })}>
+      {labelAs === "label" && <Label>{label}</Label>}
+      {labelAs === "caption" && <p className="text-xs font-medium text-muted-foreground">{label}</p>}
+      <div
+        role="radiogroup"
+        aria-label={label}
+        aria-describedby={description ? descriptionId : undefined}
+        className={groupVariants({ size })}
+      >
         {options.map((option) => {
           const isActive = value === option;
           return (
@@ -101,6 +120,11 @@ export function SegmentedControl<T extends string>({
           );
         })}
       </div>
+      {description && (
+        <p id={descriptionId} className="text-xs text-muted-foreground">
+          {description}
+        </p>
+      )}
     </div>
   );
 }

@@ -2,19 +2,28 @@
 
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { SortingInputs, SortingStepState, SortMode } from "./types";
 
-const MODES: { value: SortMode; label: string; description: string }[] = [
-  { value: "default", label: "Default", description: "Default — text order" },
-  { value: "asc", label: "Ascending", description: "Ascending — a - b" },
-  { value: "desc", label: "Descending", description: "Descending — b - a" },
-  { value: "immutable", label: "Immutable", description: "Immutable — toSorted()" },
-];
+const MODES: readonly SortMode[] = ["default", "asc", "desc", "immutable"];
+
+const MODE_LABEL: Record<SortMode, string> = {
+  default: "Default",
+  asc: "Ascending",
+  desc: "Descending",
+  immutable: "Immutable",
+};
+
+const MODE_DESCRIPTION: Record<SortMode, string> = {
+  default: "Default — text order",
+  asc: "Ascending — a - b",
+  desc: "Descending — b - a",
+  immutable: "Immutable — toSorted()",
+};
 
 const DEFAULT_INPUTS: SortingInputs = { values: [10, 1, 2, 20], mode: "default" };
 const DEFAULT_TEXT = "10, 1, 2, 20";
@@ -72,36 +81,16 @@ export function SortingControls({
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
-      <div className="space-y-1">
-        <Label>How should we sort them?</Label>
-        <div
-          role="radiogroup"
-          aria-label="How should we sort them?"
-          aria-describedby="sort-mode-description"
-          className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
-        >
-          {MODES.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              role="radio"
-              aria-checked={inputs.mode === m.value}
-              onClick={() => onInputsChange({ ...inputs, mode: m.value })}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                inputs.mode === m.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-        <p id="sort-mode-description" className="text-xs text-muted-foreground">
-          {MODES.find((m) => m.value === inputs.mode)?.description}
-        </p>
-      </div>
+      <SegmentedControl
+        label="How should we sort them?"
+        size="md"
+        labelAs="label"
+        options={MODES}
+        value={inputs.mode}
+        onChange={(mode) => onInputsChange({ ...inputs, mode })}
+        optionLabel={(mode) => MODE_LABEL[mode]}
+        description={MODE_DESCRIPTION[inputs.mode]}
+      />
 
       <div className="space-y-1">
         <div className="h-3.5" aria-hidden />

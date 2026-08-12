@@ -1,17 +1,19 @@
 "use client";
 
 import { Shuffle as ShuffleIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { ShuffleInputs, ShuffleMode, ShuffleStepState } from "./types";
 
-const MODES: { value: ShuffleMode; label: string }[] = [
-  { value: "fisher-yates", label: "Fisher–Yates" },
-  { value: "flawed-sort", label: "sort(Math.random) — flawed" },
-];
+const MODES: readonly ShuffleMode[] = ["fisher-yates", "flawed-sort"];
+
+const MODE_LABEL: Record<ShuffleMode, string> = {
+  "fisher-yates": "Fisher–Yates",
+  "flawed-sort": "sort(Math.random) — flawed",
+};
 
 export function ShuffleControls({ inputs, onInputsChange }: LabControlsProps<ShuffleInputs, ShuffleStepState>) {
   return (
@@ -40,25 +42,15 @@ export function ShuffleControls({ inputs, onInputsChange }: LabControlsProps<Shu
           Shuffle
         </Button>
       </div>
-      <div role="radiogroup" aria-label="Shuffle method" className="inline-flex flex-wrap gap-1 rounded-lg border border-border bg-muted/30 p-1">
-        {MODES.map((m) => (
-          <button
-            key={m.value}
-            type="button"
-            role="radio"
-            aria-checked={inputs.mode === m.value}
-            onClick={() => onInputsChange({ ...inputs, mode: m.value })}
-            className={cn(
-              "rounded-md px-3 py-1.5 font-mono text-xs transition-colors",
-              inputs.mode === m.value
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        label="Shuffle method"
+        labelAs="none"
+        options={MODES}
+        value={inputs.mode}
+        onChange={(mode) => onInputsChange({ ...inputs, mode })}
+        optionLabel={(mode) => MODE_LABEL[mode]}
+        mono
+      />
     </div>
   );
 }

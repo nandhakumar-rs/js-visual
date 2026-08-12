@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { ConcatArraysInputs, ConcatArraysStepState, ConcatMode } from "./types";
 
-const MODES: { value: ConcatMode; label: string }[] = [
-  { value: "concat", label: "concat()" },
-  { value: "spread", label: "Spread syntax" },
-];
+const MODES: readonly ConcatMode[] = ["concat", "spread"];
+
+const MODE_LABEL: Record<ConcatMode, string> = {
+  concat: "concat()",
+  spread: "Spread syntax",
+};
 
 const DEFAULT_INPUTS: ConcatArraysInputs = { a: [1, 2], b: [3, 4], mode: "concat" };
 
@@ -86,32 +88,15 @@ export function ConcatArraysControls({
 
   return (
     <div className="flex flex-wrap items-start gap-4">
-      <div className="space-y-1">
-        <Label>How should we combine the arrays?</Label>
-        <div
-          role="radiogroup"
-          aria-label="How should we combine the arrays?"
-          className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
-        >
-          {MODES.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              role="radio"
-              aria-checked={inputs.mode === m.value}
-              onClick={() => onInputsChange({ ...inputs, mode: m.value })}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                inputs.mode === m.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <SegmentedControl
+        label="How should we combine the arrays?"
+        size="md"
+        labelAs="label"
+        options={MODES}
+        value={inputs.mode}
+        onChange={(mode) => onInputsChange({ ...inputs, mode })}
+        optionLabel={(mode) => MODE_LABEL[mode]}
+      />
 
       <ArrayField
         key={`a-${resetKey}`}
