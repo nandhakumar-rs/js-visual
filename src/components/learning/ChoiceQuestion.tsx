@@ -38,6 +38,7 @@ export function ChoiceQuestion({
   const [revealed, setRevealed] = useState(false);
 
   const correct = selected === correctOptionId;
+  const selectedOption = options.find((o) => o.id === selected);
 
   function handleSubmit() {
     if (!selected) return;
@@ -103,11 +104,18 @@ export function ChoiceQuestion({
             "space-y-1.5 rounded-md border p-3 text-sm",
             correct ? "border-emerald-500/40 bg-emerald-500/5" : "border-amber-500/40 bg-amber-500/5"
           )}
+          aria-live="polite"
+          aria-atomic="true"
         >
           <p className="font-medium">
-            {correct ? `✅ Correct ${resultNoun}` : `Your ${resultNoun}: ${options.find((o) => o.id === selected)?.label} ❌`}
+            {correct ? `✅ Correct ${resultNoun}` : `Your ${resultNoun}: ${selectedOption?.label} ❌`}
           </p>
           {actualResultLabel && <p className="text-muted-foreground">{actualResultLabel}</p>}
+          {selectedOption?.feedback && (
+            <p className="text-muted-foreground">
+              <InlineCodeText text={selectedOption.feedback} />
+            </p>
+          )}
           <p className="text-muted-foreground">
             <InlineCodeText text={explanation} />
           </p>

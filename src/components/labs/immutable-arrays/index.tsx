@@ -6,13 +6,13 @@ import { buildInitialSteps } from "./steps";
 import { ImmutableArraysControls } from "./ImmutableArraysControls";
 import { ImmutableArraysVisualization } from "./ImmutableArraysVisualization";
 import { UnderstandContent } from "./UnderstandContent";
-import type { ImmutableArrayInputs, ImmutableArrayStepState } from "./types";
+import type { ValuesRefInputs, ValuesRefStepState } from "./types";
 
-export const immutableArraysLab: LabDefinition<ImmutableArrayInputs, ImmutableArrayStepState> = {
+export const immutableArraysLab: LabDefinition<ValuesRefInputs, ValuesRefStepState> = {
   slug: "immutable-arrays",
   mode: "scripted",
   layout: "guided",
-  defaultInputs: { newValue: 4, mode: "push" },
+  defaultInputs: { startingArray: [1, 2, 3], newValue: 4, mode: "share-mutate" },
   getCode,
   buildInitialSteps,
   simulationControls: ImmutableArraysControls,
@@ -23,59 +23,62 @@ export const immutableArraysLab: LabDefinition<ImmutableArrayInputs, ImmutableAr
   },
 
   explainSummary: {
+    title: "What actually changed?",
     bullets: [
-      <>
-        <InlineCode>push()</InlineCode> changes the array it is called on.
-      </>,
-      <>
-        <InlineCode>[...array, value]</InlineCode> creates another array with the existing items plus the
-        new value.
-      </>,
-      <>If the old array must stay unchanged, create a new array.</>,
+      <>Assigning a primitive copies its value.</>,
+      <>Reassigning the copied primitive does not affect the original variable.</>,
+      <>Assigning an array or object copies its reference value.</>,
+      <>Two variables can therefore lead to the same array or object.</>,
+      <>Mutation changes that shared array or object.</>,
+      <>Spread creates a new outer array, leaving the original array unchanged.</>,
     ],
     technicalNote: (
       <>
-        <InlineCode>Array.prototype.push()</InlineCode> mutates the array in place and returns the array&apos;s
-        new length, not the array itself. Because <InlineCode>push()</InlineCode> keeps the same{" "}
+        JavaScript always copies values during assignment and argument passing. For objects and arrays, that
+        value is a{" "}
         <InfoTooltip label="reference">
           A value JavaScript uses to point to an object or array in memory.
-        </InfoTooltip>
-        , <InlineCode>a === same</InlineCode> stays <InlineCode>true</InlineCode> after a push, while{" "}
-        <InlineCode>a === [...a]</InlineCode> is <InlineCode>false</InlineCode> — the spread version is a
-        different array object. Spread is also only a{" "}
+        </InfoTooltip>{" "}
+        to the object, not the object itself. <InlineCode>const</InlineCode> only prevents the binding from being
+        reassigned to a different array — it does not freeze the array&apos;s contents, so{" "}
+        <InlineCode>.push()</InlineCode> still mutates it. Array and object spread create a{" "}
         <InfoTooltip label="shallow copy">
           A new outer array whose nested objects may still be shared with the original.
         </InfoTooltip>
-        : if an element is itself an object, both arrays hold the same object reference. This is why
-        immutable updates matter in state-management patterns where changes are detected by reference
-        identity, such as common React state updates.
+        : if the array contains nested objects, the new outer array is separate, but those nested objects are
+        still shared with the original.
       </>
     ),
   },
 
   prediction: {
-    code: ["const numbers = [1, 2, 3];", "const updated = [...numbers, 4];", "console.log(numbers);"],
+    code: ["const first = [1, 2];", "const second = first;", "", "second.push(3);"],
     options: [
-      { id: "same", label: "[1, 2, 3]" },
-      { id: "added", label: "[1, 2, 3, 4]" },
-      { id: "four", label: "[4]" },
-      { id: "undefined", label: "undefined" },
+      { id: "both-123", label: 'Both contain [1, 2, 3]' },
+      { id: "first-only", label: "first contains [1, 2]; second contains [1, 2, 3]" },
+      { id: "both-12", label: "Both contain [1, 2]" },
+      { id: "error", label: "The code throws an error because first and second use const" },
     ],
-    correctOptionId: "same",
-    explanation: "The spread version created `updated`; it did not change `numbers`.",
+    correctOptionId: "both-123",
+    explanation:
+      "`second` refers to the same array as `first`. `.push(3)` mutates that shared array, so both variables see `[1, 2, 3]`.",
   },
 
   challenge: {
-    question: "You need to add `4` while keeping `numbers` unchanged. Which line should you use?",
-    code: ["const numbers = [1, 2, 3];"],
+    question:
+      'Choose the expression that creates a new task array containing "Review" without changing `tasks`.',
+    code: ['const tasks = ["Plan", "Build"];', "const nextTasks = ______;"],
     options: [
-      { id: "push", label: "numbers.push(4);" },
-      { id: "spread", label: "const updated = [...numbers, 4];" },
+      { id: "spread", label: '[...tasks, "Review"]' },
+      { id: "push", label: 'tasks.push("Review")' },
+      { id: "nested", label: '[tasks, "Review"]' },
+      { id: "index", label: 'tasks[2] = "Review"' },
     ],
     correctOptionId: "spread",
-    explanation: "`updated` is a new array, while `numbers` stays unchanged.",
+    explanation:
+      '`[...tasks, "Review"]` copies the existing task values into a new array and adds "Review", so `tasks` stays unchanged. `tasks.push("Review")` mutates `tasks` and returns the new length instead of an array; `[tasks, "Review"]` nests the whole array instead of flattening it; `tasks[2] = "Review"` mutates `tasks` directly.',
   },
 
   remember:
-    "`array.push(value)` changes the array in place and returns the new length. `[...array, value]` creates a brand new array with the old items plus the new one, leaving the original untouched.",
+    "Primitive assignments copy values. Arrays and objects can be shared through copied references. Mutation changes the shared object; creating a new array or object lets you update without changing the original.",
 };

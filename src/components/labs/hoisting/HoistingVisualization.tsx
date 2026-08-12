@@ -1,13 +1,45 @@
 "use client";
 
-import { ScopeBox } from "@/components/visualizers/ScopeBox";
-import { CallStack } from "@/components/visualizers/CallStack";
+import { cn } from "@/lib/utils";
 import type { LabVisualizationProps } from "@/types/lab";
-import type { HoistingInputs, HoistingStepState } from "./types";
+import { BindingRecord } from "./BindingRecord";
+import type { BindingPhase, HoistingInputs, HoistingStepState } from "./types";
 
-export function HoistingVisualization({
-  step,
-}: LabVisualizationProps<HoistingInputs, HoistingStepState>) {
+const PHASE_STRIP: { id: BindingPhase[]; label: string }[] = [
+  { id: ["entering"], label: "Enter the scope" },
+  { id: ["preparing"], label: "Prepare declarations" },
+  { id: ["before-declaration", "after-declaration", "halted"], label: "Run statements" },
+];
+
+function PhaseStrip({ phase }: { phase: BindingPhase }) {
+  return (
+    <ol className="flex flex-wrap items-center gap-1.5" aria-label="Current phase">
+      {PHASE_STRIP.map((entry, index) => {
+        const isCurrent = entry.id.includes(phase);
+        return (
+          <li key={entry.label} className="flex items-center gap-1.5">
+            {index > 0 && (
+              <span aria-hidden className="text-muted-foreground">
+                &rarr;
+              </span>
+            )}
+            <span
+              aria-current={isCurrent ? "step" : undefined}
+              className={cn(
+                "rounded-full px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide",
+                isCurrent ? "bg-primary/15 text-foreground ring-1 ring-primary/40" : "bg-muted text-muted-foreground"
+              )}
+            >
+              {entry.label}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+export function HoistingVisualization({ step }: LabVisualizationProps<HoistingInputs, HoistingStepState>) {
   const state = step?.state;
 
   if (!state) {
@@ -16,23 +48,8 @@ export function HoistingVisualization({
 
   return (
     <div className="space-y-3">
-      <ScopeBox
-        label="Global Environment"
-        kind="global"
-        isActive
-        variables={[
-          {
-            name: state.binding.name,
-            status: state.binding.status,
-            displayValue: state.binding.displayValue,
-            previousValue: state.binding.previousValue,
-          },
-        ]}
-      />
-      <CallStack frames={state.callStack} />
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        Phase: <span className="text-foreground">{state.phase}</span>
-      </p>
+      <PhaseStrip phase={state.phase} />
+      <BindingRecord state={state} />
     </div>
   );
 }

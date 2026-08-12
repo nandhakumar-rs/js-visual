@@ -38,6 +38,8 @@ export function StepController({ engine, className }: StepControllerProps) {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
             className="rounded-md border border-border/60 bg-muted/30 px-3 py-2"
+            aria-live="polite"
+            aria-atomic="true"
           >
             <p className="text-sm font-medium">{engine.currentStep.title}</p>
             <p className="text-xs text-muted-foreground">

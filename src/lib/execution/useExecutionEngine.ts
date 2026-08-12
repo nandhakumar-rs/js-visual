@@ -26,6 +26,14 @@ export interface ExecutionEngine<TState = Record<string, unknown>> {
   setSpeed: (speed: EngineSpeed) => void;
   replaceSteps: (steps: ExecutionStep<TState>[]) => void;
   appendStep: (step: ExecutionStep<TState>, autoAdvance?: boolean) => void;
+  /**
+   * Hides the current console entries without touching the step index,
+   * inputs, or visualization. Any navigation (next/previous/play/reset/
+   * replaceSteps) un-clears it so entries resume reflecting the current
+   * step normally — this is a transient "hide" of the derived log, not a
+   * separate mutable log a caller could get out of sync.
+   */
+  clearConsole: () => void;
 }
 
 export interface UseExecutionEngineOptions<TState> {
@@ -45,6 +53,9 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
   // "reached the end" never needs its own setState call inside an effect.
   const [isPlayingFlag, setIsPlayingFlag] = useState(false);
   const [speed, setSpeedState] = useState<EngineSpeed>(1);
+  // Set by clearConsole() to the index it was cleared at; any subsequent
+  // navigation resets it to null so the console resumes deriving normally.
+  const [clearedAtIndex, setClearedAtIndex] = useState<number | null>(null);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialStepsRef = useRef<ExecutionStep<TState>[]>(opts.steps);
@@ -74,6 +85,7 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     (index: number) => {
       clearTimer();
       setIsPlayingFlag(false);
+      setClearedAtIndex(null);
       setCurrentIndex(Math.max(0, Math.min(index, Math.max(steps.length - 1, 0))));
     },
     [clearTimer, steps.length]
@@ -87,6 +99,7 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     if (isLastIndex(currentIndex)) {
       setCurrentIndex(0);
     }
+    setClearedAtIndex(null);
     setIsPlayingFlag(true);
   }, [steps.length, currentIndex, isLastIndex]);
 
@@ -100,6 +113,7 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     setIsPlayingFlag(false);
     setSteps(initialStepsRef.current);
     setCurrentIndex(0);
+    setClearedAtIndex(null);
   }, [clearTimer]);
 
   const setSpeed = useCallback((s: EngineSpeed) => setSpeedState(s), []);
@@ -111,6 +125,7 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
       setIsPlayingFlag(false);
       setSteps(newSteps);
       setCurrentIndex(0);
+      setClearedAtIndex(null);
     },
     [clearTimer]
   );
@@ -119,6 +134,7 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     (step: ExecutionStep<TState>, autoAdvance = true) => {
       clearTimer();
       setIsPlayingFlag(false);
+      setClearedAtIndex(null);
       setSteps((prev) => {
         const merged = [...prev, step];
         if (autoAdvance) setCurrentIndex(merged.length - 1);
@@ -127,6 +143,10 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     },
     [clearTimer]
   );
+
+  const clearConsole = useCallback(() => {
+    setClearedAtIndex(currentIndex);
+  }, [currentIndex]);
 
   // Drives Play/Run: chained setTimeout (not setInterval) so each step can
   // carry its own durationMs (e.g. a debounce "timer running" step waits
@@ -140,19 +160,21 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     const duration = (step?.durationMs ?? defaultStepDurationMs) / speed;
     timeoutRef.current = setTimeout(() => {
       setCurrentIndex((i) => Math.min(i + 1, Math.max(steps.length - 1, 0)));
+      setClearedAtIndex(null);
     }, duration);
     return clearTimer;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlayingFlag, currentIndex, speed, steps, defaultStepDurationMs]);
 
   const consoleEntries = useMemo(() => {
+    if (clearedAtIndex === currentIndex) return [];
     const entries: ConsoleEntry[] = [];
     for (let i = 0; i <= currentIndex && i < steps.length; i++) {
       const output = steps[i]?.consoleOutput;
       if (output) entries.push(...output);
     }
     return entries;
-  }, [steps, currentIndex]);
+  }, [steps, currentIndex, clearedAtIndex]);
 
   return {
     steps,
@@ -172,5 +194,6 @@ export function useExecutionEngine<TState = Record<string, unknown>>(
     setSpeed,
     replaceSteps,
     appendStep,
+    clearConsole,
   };
 }

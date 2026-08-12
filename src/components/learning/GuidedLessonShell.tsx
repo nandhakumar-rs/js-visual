@@ -20,6 +20,8 @@ export interface GuidedLessonShellProps {
   stepController?: ReactNode;
   consolePanel?: ReactNode;
   whyPanel?: ReactNode;
+  /** Full-width panel below the player — see LabDefinition.experimentPanel. */
+  experimentPanel?: ReactNode;
   explainSummary?: ExplainSummaryConfig;
   prediction?: ReactNode;
   footer?: ReactNode;
@@ -46,6 +48,7 @@ export function GuidedLessonShell({
   stepController,
   consolePanel,
   whyPanel,
+  experimentPanel,
   explainSummary,
   prediction,
   footer,
@@ -72,14 +75,15 @@ export function GuidedLessonShell({
           <div className="rounded-lg border border-border bg-card/40 p-3">{simulationControls}</div>
         )}
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-3">
+          <div className="min-w-0 space-y-3">
             {code}
             {stepController}
           </div>
-          <div className="space-y-3">{visualization}</div>
+          <div className="min-w-0 space-y-3">{visualization}</div>
         </div>
         {consolePanel}
         {whyPanel}
+        {experimentPanel}
       </section>
 
       {explainSummary && (

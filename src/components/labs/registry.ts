@@ -1,4 +1,6 @@
 import type { AnyLabDefinition } from "@/types/lab";
+import { executionContextLab } from "./execution-context";
+import { scopeLab } from "./scope";
 import { hoistingLab } from "./hoisting";
 import { closuresLab } from "./closures";
 import { debounceLab } from "./debounce";
@@ -37,6 +39,8 @@ import { memoizationLab } from "./memoization";
 // Populated incrementally, one lab module per concept slug. A concept without
 // an entry here renders ComingSoonPanel instead of a broken/fake interaction.
 export const labRegistry: Partial<Record<string, AnyLabDefinition>> = {
+  "execution-context": executionContextLab,
+  scope: scopeLab,
   hoisting: hoistingLab,
   closures: closuresLab,
   debounce: debounceLab,

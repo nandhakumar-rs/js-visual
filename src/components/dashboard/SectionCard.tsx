@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/learning/ProgressIndicator";
 import { useProgress } from "@/lib/progress/store";
-import { getConceptsBySection } from "@/data/concepts";
+import { getVisibleConceptsBySection } from "@/data/concepts";
 import { SECTION_META, type ConceptSection } from "@/types/concept";
 
 export interface SectionCardProps {
@@ -15,7 +15,7 @@ export interface SectionCardProps {
 
 export function SectionCard({ section }: SectionCardProps) {
   const meta = SECTION_META[section];
-  const items = getConceptsBySection(section);
+  const items = getVisibleConceptsBySection(section);
   const completedLessons = useProgress((s) => s.completedLessons);
   const completed = items.filter((i) => completedLessons.includes(i.slug)).length;
 

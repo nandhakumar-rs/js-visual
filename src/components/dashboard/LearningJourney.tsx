@@ -7,12 +7,12 @@ import { useProgress } from "@/lib/progress/store";
 import { getConceptBySlug } from "@/data/concepts";
 
 const JOURNEY_SLUGS = [
+  "immutable-arrays",
   "hoisting",
   "closures",
-  "currying",
-  "this",
-  "classes",
-  "prototypes",
+  "callbacks",
+  "callback-to-promise",
+  "memoization",
 ] as const;
 
 export function LearningJourney() {

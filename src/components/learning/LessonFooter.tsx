@@ -20,8 +20,8 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
   const showInterviewQuestion = Boolean(concept.interviewQuestion);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card className="min-w-0">
+    <div className="grid gap-4 md:grid-cols-2 md:items-start">
+      <Card size="sm" className="min-w-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <PenLine className="size-4 text-primary" />
@@ -36,7 +36,7 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
       </Card>
 
       {showInterviewQuestion && (
-        <Card className="min-w-0">
+        <Card size="sm" className="min-w-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <MessageCircleQuestion className="size-4 text-primary" />
@@ -59,7 +59,7 @@ export function LessonFooter({ concept, lab }: LessonFooterProps) {
             </Button>
             {answerOpen && (
               <p className="rounded-md bg-muted/50 p-3 text-sm text-muted-foreground">
-                <InlineCodeText text={concept.technicalDescription} />
+                <InlineCodeText text={concept.interviewAnswer ?? concept.technicalDescription} />
               </p>
             )}
           </CardContent>

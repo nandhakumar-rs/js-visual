@@ -12,8 +12,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { getConceptsBySection } from "@/data/concepts";
-import { SECTION_META } from "@/types/concept";
+import { getVisibleConceptsBySection } from "@/data/concepts";
+import { SECTION_META, SECTION_ORDER } from "@/types/concept";
 
 export function SearchCommand() {
   const [open, setOpen] = useState(false);
@@ -58,8 +58,8 @@ export function SearchCommand() {
         <CommandInput placeholder="closure, promise, array, prototype, async..." />
         <CommandList>
           <CommandEmpty>No concepts found.</CommandEmpty>
-          {(Object.keys(SECTION_META) as Array<keyof typeof SECTION_META>).map((section) => {
-            const items = getConceptsBySection(section);
+          {SECTION_ORDER.map((section) => {
+            const items = getVisibleConceptsBySection(section);
             if (items.length === 0) return null;
             return (
               <CommandGroup key={section} heading={SECTION_META[section].title}>

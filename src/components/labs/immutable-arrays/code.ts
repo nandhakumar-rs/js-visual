@@ -1,13 +1,25 @@
-import type { ImmutableArrayInputs } from "./types";
+import type { ValuesRefInputs } from "./types";
 
-export function getCode({ newValue, mode }: ImmutableArrayInputs): string[] {
-  if (mode === "push") {
-    return ["const array = [1, 2, 3];", "", `array.push(${newValue});`, "console.log(array);"];
+export function getCode({ startingArray, newValue, mode }: ValuesRefInputs): string[] {
+  const arrayLiteral = `[${startingArray.join(", ")}]`;
+
+  if (mode === "share-mutate") {
+    return [
+      `const original = ${arrayLiteral};`,
+      "const alias = original;",
+      "",
+      `alias.push(${newValue});`,
+      "",
+      'console.log("original:", original);',
+      'console.log("alias:", alias);',
+    ];
   }
+
   return [
-    "const original = [1, 2, 3];",
-    "",
+    `const original = ${arrayLiteral};`,
     `const updated = [...original, ${newValue}];`,
-    "console.log(original, updated);",
+    "",
+    'console.log("original:", original);',
+    'console.log("updated:", updated);',
   ];
 }

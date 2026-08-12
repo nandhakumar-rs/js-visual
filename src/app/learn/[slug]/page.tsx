@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getConceptBySlug, getConceptsBySection } from "@/data/concepts";
+import { getConceptBySlug, getConceptsBySection, getMvpConcepts } from "@/data/concepts";
 import { isLabImplemented } from "@/components/labs/registry";
 import { LabRuntime } from "@/components/learning/LabRuntime";
 import { LessonHeader } from "@/components/learning/LessonHeader";
@@ -12,9 +12,19 @@ export default async function ConceptPage(props: PageProps<"/learn/[slug]">) {
 
   if (!concept) notFound();
 
-  const sectionConcepts = getConceptsBySection(concept.section);
-  const positionInSection = sectionConcepts.findIndex((c) => c.slug === slug) + 1;
-  const totalInSection = sectionConcepts.length;
+  const mvpConcepts = getMvpConcepts();
+  const mvpIndex = mvpConcepts.findIndex((c) => c.slug === slug);
+
+  let positionInSection: number;
+  let totalInSection: number;
+  if (mvpIndex !== -1) {
+    positionInSection = mvpIndex + 1;
+    totalInSection = mvpConcepts.length;
+  } else {
+    const sectionConcepts = getConceptsBySection(concept.section);
+    positionInSection = sectionConcepts.findIndex((c) => c.slug === slug) + 1;
+    totalInSection = sectionConcepts.length;
+  }
 
   if (!isLabImplemented(slug)) {
     return (

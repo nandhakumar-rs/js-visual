@@ -82,7 +82,8 @@ export function VariableBox({
       role="group"
       aria-label={name ? `Variable ${name}: ${shown}` : `Value: ${shown}`}
     >
-      {name && <span className="text-[0.65em] uppercase tracking-wide opacity-70">{name}</span>}
+      {/* Identifier casing must be preserved — no text-transform: uppercase here. */}
+      {name && <span className="text-[0.65em] tracking-wide opacity-70">{name}</span>}
       <span className="flex items-center gap-1.5 leading-none">
         {showTransition && (
           <>

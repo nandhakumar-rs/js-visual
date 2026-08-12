@@ -1,8 +1,8 @@
 import { SectionCard } from "@/components/dashboard/SectionCard";
 import { LearningJourney } from "@/components/dashboard/LearningJourney";
-import { SECTION_META, type ConceptSection } from "@/types/concept";
+import { SECTION_ORDER } from "@/types/concept";
 
-const SECTIONS = Object.keys(SECTION_META) as ConceptSection[];
+const SECTIONS = SECTION_ORDER;
 
 export default function Home() {
   return (

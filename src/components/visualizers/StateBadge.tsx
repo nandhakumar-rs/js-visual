@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export type StateBadgeTone = "neutral" | "changed" | "new";
+export type StateBadgeTone = "neutral" | "changed" | "new" | "success" | "error";
 
 export interface StateBadgeProps {
   children: ReactNode;
@@ -13,6 +13,8 @@ const TONE_STYLES: Record<StateBadgeTone, string> = {
   neutral: "bg-muted text-muted-foreground",
   changed: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
   new: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
+  success: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+  error: "bg-destructive/15 text-destructive",
 };
 
 /** Small pill for labeling an array/value's state (e.g. "UNCHANGED", "NEW", "SAME ARRAY CHANGED") — reusable across array-comparison lessons. */

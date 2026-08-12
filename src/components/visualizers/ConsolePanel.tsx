@@ -31,10 +31,22 @@ const KIND_ICON: Record<ConsoleEntry["kind"], ReactNode> = {
 
 export function ConsolePanel({ entries, onClear, className }: ConsolePanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isEmpty = entries.length === 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [entries.length]);
+
+  if (isEmpty) {
+    return (
+      <div className={cn("rounded-lg border border-border bg-card", className)}>
+        <div className="flex items-center justify-between px-3 py-1.5">
+          <span className="text-xs font-medium text-muted-foreground">Console</span>
+          <span className="text-xs text-muted-foreground italic">Output will appear here.</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("rounded-lg border border-border bg-card", className)}>
@@ -54,26 +66,22 @@ export function ConsolePanel({ entries, onClear, className }: ConsolePanelProps)
         )}
       </div>
       <div ref={scrollRef} className="max-h-48 overflow-y-auto p-3 text-sm">
-        {entries.length === 0 ? (
-          <p className="text-xs text-muted-foreground italic">Console output will appear here.</p>
-        ) : (
-          <ul className="space-y-1">
-            <AnimatePresence initial={false}>
-              {entries.map((entry) => (
-                <motion.li
-                  key={entry.id}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={cn("flex items-start gap-1.5", KIND_STYLES[entry.kind])}
-                >
-                  {KIND_ICON[entry.kind]}
-                  <span className="whitespace-pre-wrap break-words">{entry.content}</span>
-                </motion.li>
-              ))}
-            </AnimatePresence>
-          </ul>
-        )}
+        <ul className="space-y-1" aria-live="polite" aria-atomic="false">
+          <AnimatePresence initial={false}>
+            {entries.map((entry) => (
+              <motion.li
+                key={entry.id}
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className={cn("flex items-start gap-1.5", KIND_STYLES[entry.kind])}
+              >
+                {KIND_ICON[entry.kind]}
+                <span className="whitespace-pre-wrap break-words">{entry.content}</span>
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </ul>
       </div>
     </div>
   );

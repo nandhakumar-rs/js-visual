@@ -58,6 +58,14 @@ export interface LabDefinition<TInputs = unknown, TState = Record<string, unknow
    */
   simulationControls?: ComponentType<LabControlsProps<TInputs, TState>>;
   /**
+   * Guided layout only. A full-width panel rendered below the whole
+   * code/visualization row (and below the console and why panel), for a
+   * self-contained comparison experiment that sits alongside the step player
+   * rather than inside it. Takes no props on purpose: an experiment must not
+   * be able to move the player's step or inputs.
+   */
+  experimentPanel?: ComponentType;
+  /**
    * Set false to hide the console panel entirely, for lessons that are fully
    * visualized without needing a console.log-style transcript. Defaults to
    * true (shown) when omitted. Only affects the guided-layout branch.

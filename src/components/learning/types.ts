@@ -3,6 +3,13 @@ import type { ReactNode } from "react";
 export interface ChoiceOption {
   id: string;
   label: string;
+  /**
+   * Teaching feedback specific to *this* option, shown after the learner
+   * answers, above the question's shared `explanation`. Use it when each
+   * wrong answer has its own distinct misconception worth naming. Omit for
+   * questions where the single shared explanation already covers every case.
+   */
+  feedback?: string;
 }
 
 export interface PredictionConfig {
@@ -71,4 +78,6 @@ export interface ExplainSummaryConfig {
     /** Up to ~3 short columns. When present, comparisonItems renders as a table instead of a card grid. */
     columns?: { header: string; value: ReactNode }[];
   }[];
+  /** Header text for the comparisonItems table's first (label) column. Defaults to "Method". */
+  columnsHeader?: string;
 }

@@ -1,57 +1,93 @@
 "use client";
 
-import { ArrayVisualizer } from "@/components/visualizers/ArrayVisualizer";
+import { ArrowRight } from "lucide-react";
+import { ArrayVisualizer, type ArrayItemState } from "@/components/visualizers/ArrayVisualizer";
 import { StateBadge } from "@/components/visualizers/StateBadge";
-import { InlineCode } from "@/components/learning/InlineCode";
 import type { LabVisualizationProps } from "@/types/lab";
-import type { ImmutableArrayInputs, ImmutableArrayStepState } from "./types";
+import type { ValuesRefInputs, ValuesRefStepState } from "./types";
+
+function originalItems(values: number[], active: boolean): ArrayItemState[] {
+  return values.map((v, i) => ({ id: `o-${i}`, label: String(v), status: active ? "active" : "default" }));
+}
+
+function companionItems(values: number[] | undefined, revealLast: boolean): ArrayItemState[] {
+  if (!values) return [];
+  return values.map((v, i) => ({
+    id: `c-${i}`,
+    label: String(v),
+    status: revealLast && i === values.length - 1 ? "added" : "default",
+  }));
+}
+
+function VariableLabel({ children }: { children: string }) {
+  return (
+    <div className="flex h-7 min-w-[4.75rem] items-center justify-center rounded-md border border-border bg-card px-2 font-mono text-xs text-muted-foreground">
+      {children}
+    </div>
+  );
+}
 
 export function ImmutableArraysVisualization({
   step,
-}: LabVisualizationProps<ImmutableArrayInputs, ImmutableArrayStepState>) {
-  const state = step?.state ?? { phase: "push-seed", array: [1, 2, 3], original: [1, 2, 3] };
+}: LabVisualizationProps<ValuesRefInputs, ValuesRefStepState>) {
+  const state = step?.state;
+  if (!state) return null;
 
-  if (state.phase === "push-seed" || state.phase === "push-done") {
+  const { original, originalActive, originalBadge, companion, companionLabel, companionBadge, connector, newIndexRevealed } =
+    state;
+
+  if (connector === "shared") {
     return (
-      <div className="space-y-1.5">
-        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <InlineCode>array</InlineCode>
-          {state.phase === "push-done" && <StateBadge tone="changed">SAME ARRAY CHANGED</StateBadge>}
-        </p>
-        <ArrayVisualizer
-          items={state.array.map((v, i) => ({
-            id: `a-${i}`,
-            label: String(v),
-            status: i >= 3 ? "added" : "default",
-          }))}
-        />
+      <div className="flex items-stretch gap-2">
+        <div className="flex flex-col justify-around gap-1.5">
+          <VariableLabel>original</VariableLabel>
+          <VariableLabel>{companionLabel ?? "alias"}</VariableLabel>
+        </div>
+        <div className="flex items-stretch" aria-hidden>
+          <div className="w-3 rounded-r-md border-y border-r border-muted-foreground/40" />
+        </div>
+        <div className="flex items-center">
+          <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        </div>
+        <div className="flex-1 space-y-1.5">
+          {companionBadge && <StateBadge tone={companionBadge.tone}>{companionBadge.text}</StateBadge>}
+          <ArrayVisualizer items={companionItems(companion ?? original, Boolean(newIndexRevealed))} />
+        </div>
+      </div>
+    );
+  }
+
+  if (connector === "separate") {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <VariableLabel>original</VariableLabel>
+          <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <div className="flex-1 space-y-1.5">
+            {originalBadge && <StateBadge tone={originalBadge.tone}>{originalBadge.text}</StateBadge>}
+            <ArrayVisualizer items={originalItems(original, Boolean(originalActive))} />
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <VariableLabel>{companionLabel ?? "updated"}</VariableLabel>
+          <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <div className="flex-1 space-y-1.5">
+            {companionBadge && <StateBadge tone={companionBadge.tone}>{companionBadge.text}</StateBadge>}
+            <ArrayVisualizer
+              items={companionItems(companion, Boolean(newIndexRevealed))}
+              emptyHint={state.companionEmptyHint ?? "Not created yet."}
+            />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="space-y-1.5">
-        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <InlineCode>original</InlineCode>
-          <StateBadge tone="neutral">UNCHANGED</StateBadge>
-        </p>
-        <ArrayVisualizer items={state.original.map((v, i) => ({ id: `o-${i}`, label: String(v) }))} />
-      </div>
-      <div className="space-y-1.5">
-        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <InlineCode>updated</InlineCode>
-          <StateBadge tone="new">NEW</StateBadge>
-        </p>
-        <ArrayVisualizer
-          items={(state.updated ?? []).map((v, i) => ({
-            id: `u-${i}`,
-            label: String(v),
-            status: i >= 3 ? "added" : "default",
-          }))}
-          emptyHint="Not created yet."
-        />
-      </div>
+    <div className="flex items-center gap-2">
+      <VariableLabel>original</VariableLabel>
+      <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <ArrayVisualizer items={originalItems(original, false)} />
     </div>
   );
 }

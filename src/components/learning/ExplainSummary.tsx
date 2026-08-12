@@ -23,6 +23,7 @@ export function ExplainSummary({
   quirkNote,
   technicalNote,
   comparisonItems,
+  columnsHeader = "Method",
   className,
 }: ExplainSummaryProps) {
   return (
@@ -45,9 +46,12 @@ export function ExplainSummary({
         {comparisonItems && comparisonItems.length > 0 && (
           comparisonItems[0].columns ? (
             <div className="overflow-hidden rounded-md border border-border">
-              <div className="hidden grid-cols-4 sm:grid">
+              <div
+                className="hidden sm:grid"
+                style={{ gridTemplateColumns: `repeat(${comparisonItems[0].columns.length + 1}, minmax(0, 1fr))` }}
+              >
                 <div className="border-b border-border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground">
-                  Method
+                  {columnsHeader}
                 </div>
                 {comparisonItems[0].columns.map((c) => (
                   <div

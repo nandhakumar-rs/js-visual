@@ -5,7 +5,7 @@ import { ArrowRight, CircleCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { getConceptsBySection } from "@/data/concepts";
+import { getVisibleConceptsBySection } from "@/data/concepts";
 import { SECTION_META, type ConceptSection } from "@/types/concept";
 import { useProgress } from "@/lib/progress/store";
 import { isLabImplemented } from "@/components/labs/registry";
@@ -17,7 +17,7 @@ export interface SectionOverviewProps {
 
 export function SectionOverview({ section }: SectionOverviewProps) {
   const meta = SECTION_META[section];
-  const items = getConceptsBySection(section);
+  const items = getVisibleConceptsBySection(section);
   const completedLessons = useProgress((s) => s.completedLessons);
   const completed = items.filter((i) => completedLessons.includes(i.slug)).length;
 

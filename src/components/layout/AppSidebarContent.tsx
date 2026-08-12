@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown, Circle, CircleCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getConceptsBySection } from "@/data/concepts";
-import { SECTION_META, type ConceptSection } from "@/types/concept";
+import { getVisibleConceptsBySection } from "@/data/concepts";
+import { SECTION_META, SECTION_ORDER, type ConceptSection } from "@/types/concept";
 import { useProgress } from "@/lib/progress/store";
 import { isLabImplemented } from "@/components/labs/registry";
 
-const SECTIONS = Object.keys(SECTION_META) as ConceptSection[];
+const SECTIONS = SECTION_ORDER;
 
 export interface AppSidebarContentProps {
   onNavigate?: () => void;
@@ -36,7 +36,7 @@ export function AppSidebarContent({ onNavigate }: AppSidebarContentProps) {
     <nav aria-label="Lesson navigation" className="flex flex-col gap-1 p-2">
       {SECTIONS.map((section) => {
         const meta = SECTION_META[section];
-        const items = getConceptsBySection(section);
+        const items = getVisibleConceptsBySection(section);
         const isOpen = openSections.has(section);
         const completedCount = items.filter((i) => completedLessons.includes(i.slug)).length;
 

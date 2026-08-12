@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { StateBadge, type StateBadgeTone } from "./StateBadge";
 import { VariableBox, type VariableStatus } from "./VariableBox";
 
 export interface VariableEntry {
@@ -19,6 +20,8 @@ export interface ScopeBoxProps {
   kind?: "global" | "function" | "block" | "closure";
   variables: VariableEntry[];
   isActive?: boolean;
+  /** Small status pill next to the kind label, e.g. { text: "CURRENT SCOPE", tone: "new" } or { text: "FOUND", tone: "success" }. */
+  statusBadge?: { text: string; tone: StateBadgeTone };
   children?: ReactNode;
   className?: string;
   emptyHint?: string;
@@ -36,6 +39,7 @@ export function ScopeBox({
   kind = "function",
   variables,
   isActive,
+  statusBadge,
   children,
   className,
   emptyHint,
@@ -53,10 +57,13 @@ export function ScopeBox({
         className
       )}
     >
-      <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <span className="text-sm font-semibold">{label}</span>
-        <span className="rounded bg-muted px-1.5 py-0.5 text-[0.65rem] uppercase tracking-wide text-muted-foreground">
-          {KIND_LABEL[kind]}
+        <span className="flex flex-wrap items-center gap-1.5">
+          {statusBadge && <StateBadge tone={statusBadge.tone}>{statusBadge.text}</StateBadge>}
+          <span className="rounded bg-muted px-1.5 py-0.5 text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+            {KIND_LABEL[kind]}
+          </span>
         </span>
       </div>
 
