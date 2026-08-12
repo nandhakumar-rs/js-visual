@@ -16,15 +16,17 @@ export const concepts: Concept[] = [
     technicalDescription:
       "`undefined` is the default value for uninitialized variables — missing object properties and functions with no explicit `return` also evaluate to `undefined`. `null` is an explicitly assigned primitive value. `typeof null === \"object\"` is a historical JavaScript quirk kept for backward compatibility.",
     difficulty: "beginner",
-    prerequisites: ["mapping-users"],
+    prerequisites: [],
     interviewQuestion: "What's the difference between null and undefined, and why does typeof null return \"object\"?",
+    interviewAnswer:
+      "`undefined` is what JavaScript uses when no value has been provided — an unassigned variable, a missing object property, or a function with no `return`. `null` is a value a programmer assigns deliberately to mean \"no value here on purpose.\" `typeof null` returns `\"object\"` because the original 1995 engine tagged values by type and `null` shared the object tag. It is a bug, but fixing it would break existing websites, so it was kept.",
   },
   {
     id: "execution-context",
     slug: "execution-context",
     title: "Execution Context & Call Stack",
     section: "core",
-    order: 20,
+    order: 15,
     mvpOrder: 3,
     visibility: "mvp",
     simpleDescription:
@@ -240,7 +242,7 @@ export const concepts: Concept[] = [
     slug: "scope",
     title: "Scope",
     section: "core",
-    order: 21,
+    order: 16,
     mvpOrder: 4,
     visibility: "mvp",
     simpleDescription:
@@ -258,7 +260,7 @@ export const concepts: Concept[] = [
     slug: "hoisting",
     title: "Hoisting & Temporal Dead Zone",
     section: "core",
-    order: 15,
+    order: 17,
     mvpOrder: 5,
     visibility: "mvp",
     simpleDescription:
@@ -277,7 +279,7 @@ export const concepts: Concept[] = [
     slug: "closures",
     title: "Closures",
     section: "core",
-    order: 16,
+    order: 18,
     mvpOrder: 6,
     visibility: "mvp",
     simpleDescription:
@@ -293,7 +295,7 @@ export const concepts: Concept[] = [
     slug: "currying",
     title: "Currying",
     section: "core",
-    order: 17,
+    order: 19,
     visibility: "later",
     simpleDescription:
       "Currying turns a function that takes many arguments into a chain of functions that each take one argument at a time.",
@@ -308,7 +310,7 @@ export const concepts: Concept[] = [
     slug: "debounce",
     title: "Debounce",
     section: "core",
-    order: 18,
+    order: 20,
     visibility: "later",
     simpleDescription:
       "Debounce waits until someone stops doing something (like typing) before reacting, resetting the timer every time they act again.",
@@ -323,7 +325,7 @@ export const concepts: Concept[] = [
     slug: "throttle",
     title: "Throttle",
     section: "core",
-    order: 19,
+    order: 21,
     visibility: "later",
     simpleDescription:
       "Throttle lets a function run at most once every fixed interval, no matter how many times it's triggered in between.",

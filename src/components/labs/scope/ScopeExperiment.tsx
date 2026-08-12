@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { InlineCode } from "@/components/learning/InlineCode";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
+import { CodePanel } from "@/components/visualizers/CodePanel";
 import { StateBadge } from "@/components/visualizers/StateBadge";
 import { VariableBox } from "@/components/visualizers/VariableBox";
-import { lookupVariable, SCOPE_LOCATION_LABEL, type LookupResult, type ScopeLocation, type ScopeVariableName } from "./lookup";
+import { buildExperimentCode } from "./experimentCode";
+import { lookupVariable, SCOPE_LOCATION_LABEL, type ScopeLocation, type ScopeVariableName } from "./lookup";
 import type { ScopeId } from "./types";
 
-const LOCATIONS: ScopeLocation[] = ["global", "function", "block"];
-const VARIABLES: ScopeVariableName[] = ["appName", "userName", "message"];
+const LOCATIONS: readonly ScopeLocation[] = ["global", "function", "block"];
+const VARIABLES: readonly ScopeVariableName[] = ["appName", "userName", "message"];
 
 const SCOPE_SHORT_LABEL: Record<ScopeId, string> = {
   global: "Global",
@@ -20,150 +23,150 @@ const SCOPE_SHORT_LABEL: Record<ScopeId, string> = {
   block: "Block",
 };
 
-function SegmentedControl<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
-  optionLabel,
-  mono,
-}: {
-  label: string;
-  options: T[];
-  value: T;
-  onChange: (next: T) => void;
-  optionLabel: (option: T) => string;
-  mono?: boolean;
-}) {
-  return (
-    <div className="min-w-0 space-y-1.5">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <div
-        role="radiogroup"
-        aria-label={label}
-        className="flex flex-wrap gap-1 rounded-lg border border-border bg-muted/30 p-1"
-      >
-        {options.map((option) => {
-          const isActive = value === option;
-          return (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              onClick={() => onChange(option)}
-              className={cn(
-                "whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-                mono && "font-mono",
-                isActive ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {optionLabel(option)}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
+/**
+ * A controlled comparison experiment, deliberately independent of the step
+ * player above: it owns all of its state locally and receives no props, so
+ * changing a control here can never move the player's current step.
+ */
 export function ScopeExperiment() {
   const [location, setLocation] = useState<ScopeLocation>("function");
   const [variable, setVariable] = useState<ScopeVariableName>("appName");
-  const [checkId, setCheckId] = useState(0);
-  const [result, setResult] = useState<LookupResult | null>(null);
+  const [revealed, setRevealed] = useState(false);
 
-  function handleCheck() {
-    setResult(lookupVariable(location, variable));
-    setCheckId((id) => id + 1);
+  // Code, highlight line and outcome all derive from the same two controls,
+  // so the preview can never describe a different case than the result.
+  const { code, readLine } = useMemo(() => buildExperimentCode(location, variable), [location, variable]);
+  const result = useMemo(() => lookupVariable(location, variable), [location, variable]);
+
+  // Any control change invalidates the previous answer: the result and its
+  // explanation go away together.
+  function selectLocation(next: ScopeLocation) {
+    setLocation(next);
+    setRevealed(false);
+  }
+
+  function selectVariable(next: ScopeVariableName) {
+    setVariable(next);
+    setRevealed(false);
   }
 
   return (
     <div className="@container space-y-3 rounded-lg border border-border bg-card/40 p-3">
-      <p className="text-sm font-semibold">Try it yourself</p>
+      <div className="space-y-1">
+        <p className="text-sm font-semibold">Try it yourself</p>
+        <p className="text-xs text-muted-foreground">
+          A separate experiment from the player above — move the read into a different scope, predict the result, then
+          check it. The three declarations never move.
+        </p>
+      </div>
 
-      <div className="grid gap-3 @lg:grid-cols-[3fr_2fr]">
+      <div className="grid gap-3 @md:grid-cols-[3fr_2fr]">
         <SegmentedControl
-          label="Current location"
+          label="Read from"
           options={LOCATIONS}
           value={location}
-          onChange={setLocation}
+          onChange={selectLocation}
           optionLabel={(loc) => SCOPE_LOCATION_LABEL[loc]}
         />
         <SegmentedControl
           label="Variable to read"
           options={VARIABLES}
           value={variable}
-          onChange={setVariable}
+          onChange={selectVariable}
           optionLabel={(v) => v}
           mono
         />
       </div>
 
-      <Button type="button" size="sm" onClick={handleCheck} className="w-full @lg:w-auto">
-        Check access
-      </Button>
-
-      {result && (
-        <div
-          key={checkId}
-          role="status"
-          aria-live="polite"
-          className="space-y-2 rounded-lg border border-border/60 bg-background/60 p-3"
-        >
-          <div className="flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="text-muted-foreground">Searched:</span>
-            {result.searchPath.map((scope, index) => (
-              <motion.span
-                key={scope}
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.3, duration: 0.25 }}
-                className="flex items-center gap-1.5"
-              >
-                {index > 0 && <ArrowRight aria-hidden className="size-3 text-muted-foreground" />}
-                <span
-                  className={cn(
-                    "rounded px-1.5 py-0.5 font-medium",
-                    result.accessible && scope === result.foundIn
-                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
-                      : "bg-muted text-muted-foreground"
-                  )}
-                >
-                  {SCOPE_SHORT_LABEL[scope]}
-                </span>
-              </motion.span>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: result.searchPath.length * 0.3, duration: 0.25 }}
-          >
-            {result.accessible ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <StateBadge tone="success">FOUND</StateBadge>
-                <span className="text-sm">
-                  <InlineCode>{variable}</InlineCode> resolves in the{" "}
-                  <strong>{SCOPE_SHORT_LABEL[result.foundIn as ScopeId]}</strong> scope.
-                </span>
-                <VariableBox name={variable} displayValue={result.value ?? undefined} status="set" size="sm" />
-              </div>
-            ) : (
-              <div className="space-y-1.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <StateBadge tone="error">NOT ACCESSIBLE</StateBadge>
-                  <span className="text-sm">JavaScript cannot search inward into a scope it isn&apos;t inside.</span>
-                </div>
-                <p className="font-mono text-xs text-destructive">
-                  Uncaught ReferenceError: {variable} is not defined
-                </p>
-              </div>
-            )}
-          </motion.div>
+      {/* Both columns start directly with their panel, so their tops line up.
+          The code panel carries its own "Generated code" title bar instead of
+          an external label. */}
+      <div className="grid gap-3 @2xl:grid-cols-2 @2xl:items-start">
+        <div className="min-w-0">
+          <CodePanel code={code} activeLines={[readLine]} title="Generated code" />
         </div>
-      )}
+
+        <div className="min-w-0">
+          {!revealed ? (
+            <div className="space-y-2 rounded-lg border border-dashed border-border/70 bg-background/40 p-3">
+              <p className="text-sm font-medium">What happens at the highlighted line?</p>
+              <p className="text-xs text-muted-foreground">
+                Make your prediction, then check it against what JavaScript actually does.
+              </p>
+              <Button type="button" size="sm" onClick={() => setRevealed(true)} className="w-full @md:w-auto">
+                Check result
+              </Button>
+            </div>
+          ) : (
+            <motion.div
+              key={`${location}-${variable}`}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              role="status"
+              aria-live="polite"
+              className="space-y-2 rounded-lg border border-border/60 bg-background/60 p-3"
+            >
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-muted-foreground">Searched:</span>
+                {result.searchPath.map((scope, index) => (
+                  <motion.span
+                    key={scope}
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.3, duration: 0.25 }}
+                    className="flex items-center gap-1.5"
+                  >
+                    {index > 0 && <ArrowRight aria-hidden className="size-3 text-muted-foreground" />}
+                    <span
+                      className={cn(
+                        "rounded px-1.5 py-0.5 font-medium",
+                        result.accessible && scope === result.foundIn
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {SCOPE_SHORT_LABEL[scope]}
+                    </span>
+                  </motion.span>
+                ))}
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: result.searchPath.length * 0.3, duration: 0.25 }}
+                className="space-y-2"
+              >
+                {result.accessible ? (
+                  <>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StateBadge tone="success">FOUND</StateBadge>
+                      <VariableBox name={variable} displayValue={result.value ?? undefined} status="set" size="sm" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      <InlineCode>{variable}</InlineCode> resolves in the{" "}
+                      <strong>{SCOPE_SHORT_LABEL[result.foundIn as ScopeId]}</strong> scope — the search starts where
+                      the read happens and moves outward until it finds a match.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <StateBadge tone="error">NOT ACCESSIBLE</StateBadge>
+                    <p className="font-mono text-xs text-destructive">
+                      Uncaught ReferenceError: {variable} is not defined
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      <InlineCode>{variable}</InlineCode> is declared in a scope nested deeper than this one.
+                      JavaScript searches outward, never inward, so it reaches the end of the chain without finding it.
+                    </p>
+                  </>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

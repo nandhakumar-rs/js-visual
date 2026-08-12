@@ -5,7 +5,6 @@ import { InlineCode } from "@/components/learning/InlineCode";
 import { ScopeBox } from "@/components/visualizers/ScopeBox";
 import type { StateBadgeTone } from "@/components/visualizers/StateBadge";
 import type { LabVisualizationProps } from "@/types/lab";
-import { ScopeExperiment } from "./ScopeExperiment";
 import type { ScopeId, ScopeInputs, ScopeStepState, ScopeVarEntry } from "./types";
 
 const SCOPE_LABEL: Record<ScopeId, string> = {
@@ -99,8 +98,6 @@ export function ScopeVisualization({ step }: LabVisualizationProps<ScopeInputs, 
           ))}
         </div>
       )}
-
-      <ScopeExperiment />
     </div>
   );
 }

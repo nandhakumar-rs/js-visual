@@ -22,7 +22,7 @@ export const executionContextLab: LabDefinition<ExecutionContextInputs, Executio
   },
 
   explainSummary: {
-    title: "What the call stack is tracking",
+    title: "Why does JavaScript need a call stack?",
     bullets: [
       <>Every function call gets its own execution context.</>,
       <>A new call is pushed onto the top of the call stack.</>,
@@ -89,9 +89,21 @@ export const executionContextLab: LabDefinition<ExecutionContextInputs, Executio
     ],
     options: [
       { id: "correct", label: 'Global → welcome() → greet("Maya")' },
-      { id: "swapped", label: 'Global → greet("Maya") → welcome()' },
-      { id: "only-greet", label: 'greet("Maya") only' },
-      { id: "no-greet", label: "Global → welcome() only" },
+      {
+        id: "swapped",
+        label: 'Global → greet("Maya") → welcome()',
+        feedback: "`welcome()` was called first, so it sits underneath. The stack grows upward from the earliest call.",
+      },
+      {
+        id: "only-greet",
+        label: 'greet("Maya") only',
+        feedback: "`welcome()` has not returned yet — it is paused underneath, still on the stack.",
+      },
+      {
+        id: "no-greet",
+        label: "Global → welcome() only",
+        feedback: '`greet("Maya")` is running right now, so it must have its own frame on top.',
+      },
     ],
     correctOptionId: "correct",
     explanation:
@@ -113,9 +125,21 @@ export const executionContextLab: LabDefinition<ExecutionContextInputs, Executio
     ],
     options: [
       { id: "applyDiscount", label: "applyDiscount(30)" },
-      { id: "checkout", label: "checkout(30)" },
-      { id: "global", label: "Global" },
-      { id: "total", label: "total" },
+      {
+        id: "checkout",
+        label: "checkout(30)",
+        feedback: "`checkout(30)` is still on the stack, but paused underneath while `applyDiscount()` runs.",
+      },
+      {
+        id: "global",
+        label: "Global",
+        feedback: "Global is the bottom frame — everything else is stacked on top of it.",
+      },
+      {
+        id: "total",
+        label: "total",
+        feedback: "`total` is a variable, not a function call. Only calls get a frame on the stack.",
+      },
     ],
     correctOptionId: "applyDiscount",
     explanation:

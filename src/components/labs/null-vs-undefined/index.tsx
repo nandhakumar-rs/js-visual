@@ -5,6 +5,7 @@ import { getCode } from "./code";
 import { buildInitialSteps } from "./steps";
 import { NullUndefinedControls } from "./NullUndefinedControls";
 import { NullUndefinedVisualization } from "./NullUndefinedVisualization";
+import { UnderstandContent } from "./UnderstandContent";
 import type { NullUndefinedInputs, NullUndefinedStepState } from "./types";
 
 export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefinedStepState> = {
@@ -18,28 +19,11 @@ export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefine
   Visualization: NullUndefinedVisualization,
 
   experience: {
-    prompt: (
-      <>
-        Before we write any code, meet three{" "}
-        <InfoTooltip label="variables">A named place where JavaScript can keep a value.</InfoTooltip> and what&apos;s
-        really inside each one.
-      </>
-    ),
-    cards: [
-      { id: "a", label: "a", value: "undefined", caption: "JavaScript doesn't have a value here yet.", tone: "muted" },
-      {
-        id: "b",
-        label: "b",
-        value: "null",
-        caption: "The programmer intentionally said there's no value here.",
-        tone: "highlight",
-      },
-      { id: "c", label: "c", value: "0", caption: "This is a real value.", tone: "positive" },
-    ],
+    content: <UnderstandContent />,
   },
 
   explainSummary: {
-    title: "What's really going on",
+    title: "Why does JavaScript have two kinds of empty?",
     bullets: [
       <>
         <InfoTooltip label="undefined" code>
@@ -54,11 +38,42 @@ export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefine
         means the programmer deliberately chose &quot;no value.&quot;
       </>,
       <>
+        JavaScript produces <InlineCode>undefined</InlineCode> on its own; only a programmer produces{" "}
+        <InlineCode>null</InlineCode>.
+      </>,
+      <>
         <InlineCode>0</InlineCode> is a real{" "}
         <InfoTooltip label="value">Concrete data JavaScript can store and use, with its own type.</InfoTooltip> — not
         a stand-in for &quot;no value.&quot;
       </>,
     ],
+    comparisonItems: [
+      {
+        label: "undefined",
+        columns: [
+          { header: "Who set it", value: "JavaScript, automatically" },
+          { header: "typeof", value: '"undefined"' },
+          { header: "Means", value: "No value has been provided yet" },
+        ],
+      },
+      {
+        label: "null",
+        columns: [
+          { header: "Who set it", value: "The programmer, deliberately" },
+          { header: "typeof", value: '"object" (the quirk)' },
+          { header: "Means", value: "No value here, on purpose" },
+        ],
+      },
+      {
+        label: "0",
+        columns: [
+          { header: "Who set it", value: "The programmer, deliberately" },
+          { header: "typeof", value: '"number"' },
+          { header: "Means", value: "A real value that happens to be falsy" },
+        ],
+      },
+    ],
+    columnsHeader: "Value",
     quirkNote: (
       <>
         <InlineCode>typeof null === &quot;object&quot;</InlineCode> is a{" "}
@@ -79,12 +94,25 @@ export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefine
   },
 
   prediction: {
+    prompt: "What does `console.log(typeof user)` print?",
     code: ["let user = null;", "console.log(typeof user);"],
     options: [
-      { id: "null", label: '"null"' },
-      { id: "undefined", label: '"undefined"' },
+      {
+        id: "null",
+        label: '"null"',
+        feedback: "`typeof` only ever returns one of a fixed set of type names, and `\"null\"` is not one of them.",
+      },
+      {
+        id: "undefined",
+        label: '"undefined"',
+        feedback: "That is what `typeof` reports for a variable with no value. `user` was deliberately set to `null`.",
+      },
       { id: "object", label: '"object"' },
-      { id: "string", label: '"string"' },
+      {
+        id: "string",
+        label: '"string"',
+        feedback: "`null` is not text. `typeof` reports the type of the value, not how it looks when written out.",
+      },
     ],
     correctOptionId: "object",
     explanation:
@@ -92,14 +120,30 @@ export const nullVsUndefinedLab: LabDefinition<NullUndefinedInputs, NullUndefine
   },
 
   challenge: {
-    question: "Which value means \"JavaScript doesn't currently have a value here\" (as opposed to a value the programmer intentionally left empty)?",
+    question: "Which variable is empty because a programmer decided it should be?",
+    code: ["let draft;", "let published = null;", 'let title = "";', "let views = 0;"],
     options: [
-      { id: "undefined", label: "undefined" },
-      { id: "null", label: "null" },
+      { id: "published", label: "published" },
+      {
+        id: "draft",
+        label: "draft",
+        feedback:
+          "`draft` was declared and never assigned, so JavaScript filled it with `undefined`. Nobody chose that.",
+      },
+      {
+        id: "title",
+        label: "title",
+        feedback: "`\"\"` is a real string that happens to contain nothing. It is a value, not the absence of one.",
+      },
+      {
+        id: "views",
+        label: "views",
+        feedback: "`0` is a real number. It looks empty only because it is falsy.",
+      },
     ],
-    correctOptionId: "undefined",
+    correctOptionId: "published",
     explanation:
-      "`undefined` is JavaScript's own \"nothing here yet\" — it shows up for unassigned variables, missing properties, and functions with no `return`. `null` is something a programmer sets deliberately.",
+      "`null` is the one value a programmer assigns to say \"no value here, on purpose.\" `undefined` is what JavaScript uses when no value was provided, and `\"\"` and `0` are ordinary values that merely look empty.",
   },
 
   remember:

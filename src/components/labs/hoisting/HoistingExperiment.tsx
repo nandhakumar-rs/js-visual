@@ -7,7 +7,7 @@ import { InlineCode } from "@/components/learning/InlineCode";
 import { InlineCodeText } from "@/components/learning/InlineCodeText";
 import { CodePanel } from "@/components/visualizers/CodePanel";
 import { StateBadge } from "@/components/visualizers/StateBadge";
-import { SegmentedControl } from "./SegmentedControl";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import { STATE_LABEL, STATE_TONE } from "./BindingRecord";
 import { buildCase, DECLARATION_LABEL, MOMENT_LABEL, type Moment } from "./outcome";
 import type { DeclarationType } from "./types";

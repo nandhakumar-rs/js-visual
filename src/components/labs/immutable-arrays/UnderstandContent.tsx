@@ -2,8 +2,20 @@ import { ArrowRight } from "lucide-react";
 import { InfoTooltip } from "@/components/learning/InfoTooltip";
 import { InlineCode } from "@/components/learning/InlineCode";
 import { ArrayVisualizer } from "@/components/visualizers/ArrayVisualizer";
+import { CodePanel } from "@/components/visualizers/CodePanel";
 import { StateBadge } from "@/components/visualizers/StateBadge";
 import { VariableBox } from "@/components/visualizers/VariableBox";
+
+const EXAMPLE_CODE = [
+  "const original = [1, 2, 3];",
+  "",
+  "const alias = original;",
+  "alias.push(4);",
+  "// original is now [1, 2, 3, 4] too",
+  "",
+  "const updated = [...original, 5];",
+  "// original is unchanged",
+];
 
 function VariableLabel({ children }: { children: string }) {
   return (
@@ -27,7 +39,7 @@ function BracketRow({
   revealLast?: boolean;
 }) {
   return (
-    <div className="lg:mx-auto lg:max-w-md">
+    <div className="lg:mx-auto lg:max-w-xl">
       <div className="flex items-stretch gap-2">
         <div className="flex flex-col justify-around gap-1.5">
           <VariableLabel>original</VariableLabel>
@@ -59,9 +71,10 @@ export function UnderstandContent() {
     <div className="space-y-6">
       {/* Stage A: copying a primitive value */}
       <div className="space-y-2">
+        <p className="text-sm font-semibold">Copying a number makes two independent values</p>
         <p className="text-sm text-muted-foreground">Start with one number, then copy it into another variable.</p>
         <div className="rounded-lg border border-border bg-card/50 p-4">
-          <div className="flex flex-wrap items-center gap-4 lg:mx-auto lg:max-w-md">
+          <div className="flex flex-wrap items-center gap-4 lg:mx-auto lg:max-w-xl">
             <VariableBox name="score" value={10} status="set" />
             <VariableBox name="copiedScore" value={20} previousValue={10} status="updated" />
             <div className="flex flex-col gap-1">
@@ -81,6 +94,7 @@ export function UnderstandContent() {
 
       {/* Stage B: sharing an array */}
       <div className="space-y-3">
+        <p className="text-sm font-semibold">Copying an array does not make two arrays</p>
         <p className="text-sm text-muted-foreground">
           Now assign an array to another variable. The reference is copied, but the array itself is not
           duplicated.
@@ -110,11 +124,12 @@ export function UnderstandContent() {
 
       {/* Stage C: creating a new array */}
       <div className="space-y-2">
+        <p className="text-sm font-semibold">To leave the original alone, build a new array</p>
         <p className="text-sm text-muted-foreground">
           To add a value without touching the original array, create a new one instead.
         </p>
         <div className="rounded-lg border border-border bg-card/50 p-4">
-          <div className="space-y-3 lg:mx-auto lg:max-w-md">
+          <div className="space-y-3 lg:mx-auto lg:max-w-xl">
             <div className="flex items-center gap-2">
               <VariableLabel>original</VariableLabel>
               <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -146,6 +161,11 @@ export function UnderstandContent() {
       </div>
 
       {/* Compact syntax recap */}
+      <div className="space-y-3">
+        <p className="text-sm text-muted-foreground">Reading it back as code:</p>
+        <CodePanel code={EXAMPLE_CODE} title="Sharing vs. copying" />
+      </div>
+
       <div className="grid gap-3 rounded-lg border border-border bg-card/50 p-4 sm:grid-cols-3">
         <div className="space-y-1">
           <p className="font-mono text-xs">

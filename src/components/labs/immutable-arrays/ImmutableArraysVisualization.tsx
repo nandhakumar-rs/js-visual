@@ -31,7 +31,7 @@ export function ImmutableArraysVisualization({
   step,
 }: LabVisualizationProps<ValuesRefInputs, ValuesRefStepState>) {
   const state = step?.state;
-  if (!state) return null;
+  if (!state) return <p className="text-sm text-muted-foreground">Press Run or Step to begin.</p>;
 
   const { original, originalActive, originalBadge, companion, companionLabel, companionBadge, connector, newIndexRevealed } =
     state;

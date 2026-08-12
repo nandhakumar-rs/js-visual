@@ -1,7 +1,7 @@
 "use client";
 
 import type { LabControlsProps } from "@/types/lab";
-import { SegmentedControl } from "./SegmentedControl";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { HoistingInputs, HoistingStepState, ScenarioId } from "./types";
 
 const OPTIONS: readonly ScenarioId[] = ["var", "let-const", "function"];
@@ -23,6 +23,8 @@ export function HoistingControls({
       </p>
       <SegmentedControl
         label="Scenario"
+        size="md"
+        labelAs="label"
         options={OPTIONS}
         value={inputs.scenario}
         onChange={(scenario) => onInputsChange({ scenario })}

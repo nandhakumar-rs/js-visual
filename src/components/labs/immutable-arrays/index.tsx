@@ -23,7 +23,7 @@ export const immutableArraysLab: LabDefinition<ValuesRefInputs, ValuesRefStepSta
   },
 
   explainSummary: {
-    title: "What actually changed?",
+    title: "Why does changing one variable affect the other?",
     bullets: [
       <>Assigning a primitive copies its value.</>,
       <>Reassigning the copied primitive does not affect the original variable.</>,
@@ -32,6 +32,30 @@ export const immutableArraysLab: LabDefinition<ValuesRefInputs, ValuesRefStepSta
       <>Mutation changes that shared array or object.</>,
       <>Spread creates a new outer array, leaving the original array unchanged.</>,
     ],
+    comparisonItems: [
+      {
+        label: "Assigning a number",
+        columns: [
+          { header: "What is copied", value: "The value itself" },
+          { header: "Effect on the original", value: "None — the two are independent" },
+        ],
+      },
+      {
+        label: "Assigning an array",
+        columns: [
+          { header: "What is copied", value: "The reference, not the array" },
+          { header: "Effect on the original", value: "Mutating either name changes the one shared array" },
+        ],
+      },
+      {
+        label: "Spreading an array",
+        columns: [
+          { header: "What is copied", value: "The items, into a new array" },
+          { header: "Effect on the original", value: "None — the original is left as it was" },
+        ],
+      },
+    ],
+    columnsHeader: "Operation",
     technicalNote: (
       <>
         JavaScript always copies values during assignment and argument passing. For objects and arrays, that
@@ -52,12 +76,26 @@ export const immutableArraysLab: LabDefinition<ValuesRefInputs, ValuesRefStepSta
   },
 
   prediction: {
+    prompt: "What do `first` and `second` contain after `second.push(3)` runs?",
     code: ["const first = [1, 2];", "const second = first;", "", "second.push(3);"],
     options: [
       { id: "both-123", label: 'Both contain [1, 2, 3]' },
-      { id: "first-only", label: "first contains [1, 2]; second contains [1, 2, 3]" },
-      { id: "both-12", label: "Both contain [1, 2]" },
-      { id: "error", label: "The code throws an error because first and second use const" },
+      {
+        id: "first-only",
+        label: "first contains [1, 2]; second contains [1, 2, 3]",
+        feedback:
+          "That would happen if `second` had received its own copy of the array. Assignment copied the reference instead, so there is only one array.",
+      },
+      {
+        id: "both-12",
+        label: "Both contain [1, 2]",
+        feedback: "`.push(3)` really does change the array — the change is just visible through both names.",
+      },
+      {
+        id: "error",
+        label: "The code throws an error because first and second use const",
+        feedback: "`const` prevents reassigning the variable, not changing the array it points to.",
+      },
     ],
     correctOptionId: "both-123",
     explanation:
@@ -70,13 +108,25 @@ export const immutableArraysLab: LabDefinition<ValuesRefInputs, ValuesRefStepSta
     code: ['const tasks = ["Plan", "Build"];', "const nextTasks = ______;"],
     options: [
       { id: "spread", label: '[...tasks, "Review"]' },
-      { id: "push", label: 'tasks.push("Review")' },
-      { id: "nested", label: '[tasks, "Review"]' },
-      { id: "index", label: 'tasks[2] = "Review"' },
+      {
+        id: "push",
+        label: 'tasks.push("Review")',
+        feedback: "`.push()` mutates `tasks` and returns the new length, so `nextTasks` would be a number.",
+      },
+      {
+        id: "nested",
+        label: '[tasks, "Review"]',
+        feedback: "This puts the whole `tasks` array inside a new array instead of spreading its items into it.",
+      },
+      {
+        id: "index",
+        label: 'tasks[2] = "Review"',
+        feedback: "Writing to an index changes `tasks` itself, which is exactly what we are trying to avoid.",
+      },
     ],
     correctOptionId: "spread",
     explanation:
-      '`[...tasks, "Review"]` copies the existing task values into a new array and adds "Review", so `tasks` stays unchanged. `tasks.push("Review")` mutates `tasks` and returns the new length instead of an array; `[tasks, "Review"]` nests the whole array instead of flattening it; `tasks[2] = "Review"` mutates `tasks` directly.',
+      '`[...tasks, "Review"]` copies the existing task values into a new array and adds "Review", so `tasks` stays unchanged.',
   },
 
   remember:

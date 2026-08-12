@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
 import type { ValuesRefInputs, ValuesRefMode, ValuesRefStepState } from "./types";
 
-const MODES: { value: ValuesRefMode; label: string }[] = [
-  { value: "share-mutate", label: "Share + mutate" },
-  { value: "copy-add", label: "Copy + add" },
-];
+const MODES: readonly ValuesRefMode[] = ["share-mutate", "copy-add"];
+
+const MODE_LABEL: Record<ValuesRefMode, string> = {
+  "share-mutate": "Share + mutate",
+  "copy-add": "Copy + add",
+};
 
 const DEFAULT_INPUTS: ValuesRefInputs = { startingArray: [1, 2, 3], newValue: 4, mode: "share-mutate" };
 
@@ -81,57 +83,45 @@ export function ImmutableArraysControls({
   }
 
   return (
-    <div className="flex flex-wrap items-start gap-4">
-      <div className="space-y-1">
-        <Label>How should we add the value?</Label>
-        <div
-          role="radiogroup"
-          aria-label="How should we add the value?"
-          className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-muted/30 p-0.5"
-        >
-          {MODES.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              role="radio"
-              aria-checked={inputs.mode === m.value}
-              onClick={() => onInputsChange({ ...inputs, mode: m.value })}
-              className={cn(
-                "rounded-md px-3 py-1 text-sm transition-colors",
-                inputs.mode === m.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <ArrayField
-        key={resetKey}
-        defaultText={inputs.startingArray.join(", ")}
-        error={arrayError}
-        onCommit={handleArrayBlur}
-      />
-
-      <div className="w-24 space-y-1">
-        <Label htmlFor="new-value">New value</Label>
-        <Input
-          id="new-value"
-          type="number"
-          value={inputs.newValue}
-          onChange={(e) => onInputsChange({ ...inputs, newValue: Number(e.target.value) || 0 })}
+    <div className="space-y-2">
+      <p className="text-xs text-muted-foreground">
+        Choose how the second variable is built, then change the starting values to test it.
+      </p>
+      <div className="flex flex-wrap items-start gap-4">
+        <SegmentedControl
+          label="How should we add the value?"
+          size="md"
+          labelAs="label"
+          options={MODES}
+          value={inputs.mode}
+          onChange={(mode) => onInputsChange({ ...inputs, mode })}
+          optionLabel={(mode) => MODE_LABEL[mode]}
         />
-      </div>
 
-      <div className="space-y-1">
-        <div className="h-3.5" aria-hidden />
-        <Button variant="outline" size="default" onClick={handleReset} className="gap-1.5">
-          <RotateCcw className="size-4" />
-          Reset to defaults
-        </Button>
+        <ArrayField
+          key={resetKey}
+          defaultText={inputs.startingArray.join(", ")}
+          error={arrayError}
+          onCommit={handleArrayBlur}
+        />
+
+        <div className="w-24 space-y-1">
+          <Label htmlFor="new-value">New value</Label>
+          <Input
+            id="new-value"
+            type="number"
+            value={inputs.newValue}
+            onChange={(e) => onInputsChange({ ...inputs, newValue: Number(e.target.value) || 0 })}
+          />
+        </div>
+
+        <div className="space-y-1">
+          <div className="h-3.5" aria-hidden />
+          <Button variant="outline" size="default" onClick={handleReset} className="gap-1.5">
+            <RotateCcw className="size-4" />
+            Reset to defaults
+          </Button>
+        </div>
       </div>
     </div>
   );

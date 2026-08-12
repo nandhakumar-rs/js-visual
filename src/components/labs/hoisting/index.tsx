@@ -24,7 +24,7 @@ export const hoistingLab: LabDefinition<HoistingInputs, HoistingStepState> = {
   },
 
   explainSummary: {
-    title: "Why does JavaScript behave this way?",
+    title: "Why do declarations behave differently?",
     bullets: [
       <>JavaScript prepares declarations before executing the statements in a scope.</>,
       <>
@@ -85,7 +85,7 @@ export const hoistingLab: LabDefinition<HoistingInputs, HoistingStepState> = {
   },
 
   prediction: {
-    prompt: "What happens when console.log(score) runs?",
+    prompt: "What happens when `console.log(score)` runs?",
     code: ["function showScore() {", "  console.log(score);", "  let score = 10;", "}", "", "showScore();"],
     options: [
       {

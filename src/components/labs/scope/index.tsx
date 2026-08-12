@@ -2,6 +2,7 @@ import type { LabDefinition } from "@/types/lab";
 import { InlineCode } from "@/components/learning/InlineCode";
 import { getCode } from "./code";
 import { buildInitialSteps } from "./steps";
+import { ScopeExperiment } from "./ScopeExperiment";
 import { ScopeVisualization } from "./ScopeVisualization";
 import { UnderstandContent } from "./UnderstandContent";
 import type { ScopeInputs, ScopeStepState } from "./types";
@@ -14,6 +15,7 @@ export const scopeLab: LabDefinition<ScopeInputs, ScopeStepState> = {
   getCode,
   buildInitialSteps,
   Visualization: ScopeVisualization,
+  experimentPanel: ScopeExperiment,
 
   experience: {
     content: <UnderstandContent />,
@@ -24,8 +26,7 @@ export const scopeLab: LabDefinition<ScopeInputs, ScopeStepState> = {
     bullets: [
       <>Scope keeps variables limited to the parts of the program that need them.</>,
       <>JavaScript begins searching in the current scope.</>,
-      <>If the variable is not there, JavaScript searches the enclosing scope.</>,
-      <>The search continues outward until the variable is found.</>,
+      <>If the variable is not there, the search continues outward through the enclosing scopes until it is found.</>,
       <>JavaScript never searches inward into child scopes.</>,
       <>
         <InlineCode>let</InlineCode> and <InlineCode>const</InlineCode> declared inside <InlineCode>{"{}"}</InlineCode>{" "}
@@ -75,7 +76,7 @@ export const scopeLab: LabDefinition<ScopeInputs, ScopeStepState> = {
   },
 
   prediction: {
-    prompt: "What happens when console.log(message) runs?",
+    prompt: "What happens when `console.log(message)` runs?",
     code: [
       "function prepareLesson() {",
       "  if (true) {",
@@ -87,14 +88,26 @@ export const scopeLab: LabDefinition<ScopeInputs, ScopeStepState> = {
       "prepareLesson();",
     ],
     options: [
-      { id: "ready", label: 'It logs "Ready"' },
-      { id: "undefined", label: "It logs undefined" },
+      {
+        id: "ready",
+        label: 'It logs "Ready"',
+        feedback: "`message` exists only inside the `if` block, and the surrounding function cannot see into it.",
+      },
+      {
+        id: "undefined",
+        label: "It logs undefined",
+        feedback: "An out-of-scope variable is not `undefined` — JavaScript never finds a binding for it at all.",
+      },
       { id: "reference-error", label: "It throws a ReferenceError" },
-      { id: "null", label: "It logs null" },
+      {
+        id: "null",
+        label: "It logs null",
+        feedback: "JavaScript never fills a missing variable with `null`. `null` is only ever assigned deliberately.",
+      },
     ],
     correctOptionId: "reference-error",
     explanation:
-      "Correct answer: it throws a ReferenceError. `message` belongs to the `if` block. Code in the surrounding function cannot look inward to access it.",
+      "`message` belongs to the `if` block. Code in the surrounding function cannot look inward to access it.",
   },
 
   challenge: {
@@ -115,9 +128,21 @@ export const scopeLab: LabDefinition<ScopeInputs, ScopeStepState> = {
     ],
     options: [
       { id: "appName", label: "[appName, learner, status]" },
-      { id: "message", label: "[learner, status, message]" },
-      { id: "userName", label: "[appName, userName]" },
-      { id: "courseName", label: "[status, courseName]" },
+      {
+        id: "message",
+        label: "[learner, status, message]",
+        feedback: "`message` is never declared in this program, so reading it throws a `ReferenceError`.",
+      },
+      {
+        id: "userName",
+        label: "[appName, userName]",
+        feedback: "This function declares `learner`, not `userName` — and it skips the block scope entirely.",
+      },
+      {
+        id: "courseName",
+        label: "[status, courseName]",
+        feedback: "`courseName` is never declared, and this skips the function and global scopes.",
+      },
     ],
     correctOptionId: "appName",
     explanation:
