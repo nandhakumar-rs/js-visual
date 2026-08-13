@@ -414,7 +414,9 @@ export const concepts: Concept[] = [
       "Callback-based async APIs invoke a caller-supplied function upon completion (success or error), predating Promises; deeply nested callbacks for sequential async steps produce the well-known \"callback hell\" pattern.",
     difficulty: "beginner",
     prerequisites: ["closures"],
-    interviewQuestion: "What problem do Promises solve that callbacks don't handle well?",
+    interviewQuestion: "What is a callback, and why can't a function whose work finishes later just return its result?",
+    interviewAnswer:
+      "A callback is a function passed to another function as an argument, so that it can be called later. Because functions are values, this is an ordinary argument pass — nothing in the language marks a parameter as a callback, and the receiving function decides when, and whether, to call it. It is needed for work that finishes later because the function you called has to return before the result exists, so its return value cannot carry the answer; calling the function you handed over is the only route back into your code. By convention the first parameter is the error, so failures arrive the same way results do — passed, never thrown, which is why try/catch around the call cannot see them.",
   },
   {
     id: "callback-hell",
