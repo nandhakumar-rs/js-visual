@@ -27,6 +27,9 @@ import { eventDelegationLab } from "./event-delegation";
 import { xhrLab } from "./xhr";
 import { fetchLab } from "./fetch";
 import { callbacksLab } from "./callbacks";
+import { callbackHellLab } from "./callback-hell";
+import { eventLoopLab } from "./event-loop";
+import { microtaskQueueLab } from "./microtask-queue";
 import { parallelAsyncLab } from "./parallel-async";
 import { callbackToPromiseLab } from "./callback-to-promise";
 import { promiseAllLab } from "./promise-all";
@@ -67,8 +70,11 @@ export const labRegistry: Partial<Record<string, AnyLabDefinition>> = {
   xhr: xhrLab,
   fetch: fetchLab,
   callbacks: callbacksLab,
+  "callback-hell": callbackHellLab,
   "parallel-async": parallelAsyncLab,
   "callback-to-promise": callbackToPromiseLab,
+  "event-loop": eventLoopLab,
+  "microtask-queue": microtaskQueueLab,
   "promise-all": promiseAllLab,
   "async-await": asyncAwaitLab,
   retry: retryLab,

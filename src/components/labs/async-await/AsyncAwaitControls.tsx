@@ -1,16 +1,16 @@
 "use client";
 
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
-import type { AsyncAwaitInputs, AsyncAwaitStepState, AsyncStyle } from "./types";
+import type { AsyncAwaitInputs, AsyncAwaitStepState, ScenarioId } from "./types";
 
-const STYLES: readonly AsyncStyle[] = ["promises", "async-await"];
+const OPTIONS: readonly ScenarioId[] = ["top-to-bottom", "not-blocking", "fails", "all-together"];
 
-const STYLE_LABEL: Record<AsyncStyle, string> = {
-  promises: "Promises",
-  "async-await": "Async / Await",
+const SCENARIO_LABEL: Record<ScenarioId, string> = {
+  "top-to-bottom": "Two steps, in order",
+  "not-blocking": "await doesn't block",
+  fails: "One try/catch",
+  "all-together": "All together",
 };
 
 export function AsyncAwaitControls({
@@ -18,24 +18,19 @@ export function AsyncAwaitControls({
   onInputsChange,
 }: LabControlsProps<AsyncAwaitInputs, AsyncAwaitStepState>) {
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="@container space-y-2">
+      <p className="text-xs text-muted-foreground">
+        The same asynchronous work, written as ordinary statements.
+      </p>
       <SegmentedControl
-        label="Code style"
+        label="Scenario"
         size="md"
-        labelAs="none"
-        options={STYLES}
-        value={inputs.style}
-        onChange={(style) => onInputsChange({ ...inputs, style })}
-        optionLabel={(style) => STYLE_LABEL[style]}
+        labelAs="label"
+        options={OPTIONS}
+        value={inputs.scenario}
+        onChange={(scenario) => onInputsChange({ scenario })}
+        optionLabel={(option) => SCENARIO_LABEL[option]}
       />
-      <div className="flex items-center gap-2">
-        <Switch
-          id="async-statuses-fail"
-          checked={inputs.statusesFail}
-          onCheckedChange={(checked) => onInputsChange({ ...inputs, statusesFail: checked })}
-        />
-        <Label htmlFor="async-statuses-fail">Make getStatuses() fail</Label>
-      </div>
     </div>
   );
 }

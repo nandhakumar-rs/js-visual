@@ -6,7 +6,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
-  title: "JavaScript Visual Lab",
+  title: "Visualize JS",
   description: "Change the code. Run it. Watch what JavaScript does.",
 };
 

@@ -2,31 +2,34 @@
 
 import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
-import type { CallbackToPromiseInputs, CallbackToPromiseStepState, ConversionStyle } from "./types";
+import type { PromisesInputs, PromisesStepState, ScenarioId } from "./types";
 
-const STYLES: readonly ConversionStyle[] = ["callback", "promise"];
+const OPTIONS: readonly ScenarioId[] = ["value", "chain", "fails"];
 
-const STYLE_LABEL: Record<ConversionStyle, string> = {
-  callback: "Callback",
-  promise: "Promise",
+const SCENARIO_LABEL: Record<ScenarioId, string> = {
+  value: "A promise is a value",
+  chain: "Chaining the steps",
+  fails: "When a step fails",
 };
 
 export function CallbackToPromiseControls({
   inputs,
   onInputsChange,
-}: LabControlsProps<CallbackToPromiseInputs, CallbackToPromiseStepState>) {
+}: LabControlsProps<PromisesInputs, PromisesStepState>) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="@container space-y-2">
+      <p className="text-xs text-muted-foreground">
+        The same three steps as the last lesson, without the pyramid.
+      </p>
       <SegmentedControl
-        label="Style"
+        label="Scenario"
         size="md"
-        labelAs="none"
-        options={STYLES}
-        value={inputs.style}
-        onChange={(style) => onInputsChange({ style })}
-        optionLabel={(style) => STYLE_LABEL[style]}
+        labelAs="label"
+        options={OPTIONS}
+        value={inputs.scenario}
+        onChange={(scenario) => onInputsChange({ scenario })}
+        optionLabel={(option) => SCENARIO_LABEL[option]}
       />
-      <span className="text-xs text-muted-foreground">Convert →</span>
     </div>
   );
 }

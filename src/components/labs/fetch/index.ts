@@ -25,16 +25,16 @@ export const fetchLab: LabDefinition<FetchInputs, FetchStepState> = {
       "fetch() never blocks — it returns a Promise instantly, which later settles to fulfilled or rejected once the network request completes.",
   },
   challenge: {
-    question: "Where do .then() and .catch() callbacks get scheduled once their Promise settles?",
+    question: "Does fetch()'s Promise reject on a 404 response?",
     options: [
-      { id: "a", label: "The microtask queue" },
-      { id: "b", label: "The task (macrotask) queue" },
-      { id: "c", label: "They run synchronously, immediately" },
+      { id: "no", label: "No — it fulfils, and response.ok is false" },
+      { id: "yes", label: "Yes, any status outside 200-299 rejects" },
+      { id: "throws", label: "It throws synchronously before returning a Promise" },
     ],
-    correctOptionId: "a",
+    correctOptionId: "no",
     explanation:
-      "Promise callbacks (.then/.catch/.finally) are microtasks — they run after the current synchronous code finishes, but before the event loop picks up any macrotask like a setTimeout callback.",
+      "fetch() only rejects when the request itself fails — no network, DNS failure, CORS. A 404 is a successful exchange with an error status, so the Promise fulfils and you have to check response.ok or response.status yourself.",
   },
   remember:
-    "fetch() returns a Promise immediately; it resolves once the response headers arrive, moving from pending to fulfilled or rejected. .then()/.catch() callbacks run as microtasks.",
+    "fetch() returns a Promise immediately; it resolves once the response headers arrive, moving from pending to fulfilled or rejected. It only rejects on a network-level failure — an HTTP error status like 404 still fulfils.",
 };

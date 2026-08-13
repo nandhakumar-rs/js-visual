@@ -1,5 +1,4 @@
 import { SectionCard } from "@/components/dashboard/SectionCard";
-import { LearningJourney } from "@/components/dashboard/LearningJourney";
 import { SECTION_ORDER } from "@/types/concept";
 
 const SECTIONS = SECTION_ORDER;
@@ -21,8 +20,6 @@ export default function Home() {
           <SectionCard key={section} section={section} />
         ))}
       </section>
-
-      <LearningJourney />
     </div>
   );
 }

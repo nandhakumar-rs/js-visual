@@ -39,7 +39,7 @@ export function buildInitialSteps({ willSucceed }: FetchInputs): ExecutionStep<F
       id: "then1",
       title: ".then(response => response.json()) queued",
       description:
-        "The fulfilled handler is scheduled as a microtask — it runs after the current code finishes, but before any setTimeout callbacks.",
+        "The fulfilled handler is queued rather than called on the spot — it runs once the current synchronous code has finished.",
       activeCodeLines: [2],
       state: {
         promiseState: "fulfilled",
@@ -69,7 +69,7 @@ export function buildInitialSteps({ willSucceed }: FetchInputs): ExecutionStep<F
       title: ".catch(error => console.error(error)) runs",
       description: "Because the Promise rejected, every .then is skipped and control jumps straight to .catch.",
       whyExplanation:
-        "A rejected Promise skips remaining .then handlers and is instead caught by the nearest .catch — also scheduled as a microtask.",
+        "A rejected Promise skips remaining .then handlers and is instead caught by the nearest .catch.",
       activeCodeLines: [4],
       consoleOutput: [{ id: "log-1", kind: "error", content: "TypeError: Failed to fetch" }],
       state: {

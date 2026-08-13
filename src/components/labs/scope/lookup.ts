@@ -12,7 +12,7 @@ const HOME: Record<ScopeVariableName, ScopeLocation> = {
 };
 
 const VALUES: Record<ScopeVariableName, string> = {
-  appName: '"JS Visual Lab"',
+  appName: '"Visualize JS"',
   userName: '"Maya"',
   message: '"Welcome, Maya"',
 };

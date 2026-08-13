@@ -1,6 +1,6 @@
 export function getCode(): string[] {
   return [
-    'const appName = "JS Visual Lab";',
+    'const appName = "Visualize JS";',
     "",
     "function greetUser() {",
     '  const userName = "Maya";',

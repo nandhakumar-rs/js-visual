@@ -1,7 +1,7 @@
 import type { ExecutionStep } from "@/lib/execution/types";
 import type { ScopeStepState, ScopeVarEntry } from "./types";
 
-const appName: ScopeVarEntry = { name: "appName", displayValue: '"JS Visual Lab"', status: "set" };
+const appName: ScopeVarEntry = { name: "appName", displayValue: '"Visualize JS"', status: "set" };
 const greetUser: ScopeVarEntry = { name: "greetUser", displayValue: "ƒ", status: "set" };
 const userName: ScopeVarEntry = { name: "userName", displayValue: '"Maya"', status: "set" };
 const message: ScopeVarEntry = { name: "message", displayValue: '"Welcome, Maya"', status: "set" };
@@ -100,7 +100,7 @@ export function buildInitialSteps(): ExecutionStep<ScopeStepState>[] {
       activeCodeLines: [8],
       consoleOutput: [
         { id: "log-cmd", kind: "command", content: "console.log(message, appName)" },
-        { id: "log-out", kind: "output", content: "Welcome, Maya JS Visual Lab" },
+        { id: "log-out", kind: "output", content: "Welcome, Maya Visualize JS" },
       ],
       state: {
         currentScope: "block",

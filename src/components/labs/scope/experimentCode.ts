@@ -4,7 +4,7 @@ import type { ScopeLocation, ScopeVariableName } from "./lookup";
 // up to the point where the scopes are opened. Only the tail differs, because
 // only the read moves.
 const HEAD = [
-  'const appName = "JS Visual Lab";',
+  'const appName = "Visualize JS";',
   "",
   "function greetUser() {",
   '  const userName = "Maya";',

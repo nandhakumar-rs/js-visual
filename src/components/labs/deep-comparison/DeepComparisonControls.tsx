@@ -1,32 +1,36 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
-import type { DeepComparisonInputs, DeepComparisonStepState } from "./types";
+import type { DeepComparisonInputs, DeepComparisonStepState, ScenarioId } from "./types";
+
+const OPTIONS: readonly ScenarioId[] = ["shallow-vs-deep", "walk", "mismatch", "all-together"];
+
+const SCENARIO_LABEL: Record<ScenarioId, string> = {
+  "shallow-vs-deep": "Shallow said no",
+  walk: "Walking down",
+  mismatch: "Where it fails",
+  "all-together": "All together",
+};
 
 export function DeepComparisonControls({
   inputs,
   onInputsChange,
 }: LabControlsProps<DeepComparisonInputs, DeepComparisonStepState>) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      <div className="space-y-1">
-        <Label htmlFor="deep-name-a">a.name</Label>
-        <Input id="deep-name-a" value={inputs.nameA} onChange={(e) => onInputsChange({ ...inputs, nameA: e.target.value })} />
-      </div>
-      <div className="space-y-1">
-        <Label htmlFor="deep-name-b">b.name</Label>
-        <Input id="deep-name-b" value={inputs.nameB} onChange={(e) => onInputsChange({ ...inputs, nameB: e.target.value })} />
-      </div>
-      <div className="space-y-1">
-        <Label htmlFor="deep-city-a">a.address.city</Label>
-        <Input id="deep-city-a" value={inputs.cityA} onChange={(e) => onInputsChange({ ...inputs, cityA: e.target.value })} />
-      </div>
-      <div className="space-y-1">
-        <Label htmlFor="deep-city-b">b.address.city</Label>
-        <Input id="deep-city-b" value={inputs.cityB} onChange={(e) => onInputsChange({ ...inputs, cityB: e.target.value })} />
-      </div>
+    <div className="@container space-y-2">
+      <p className="text-xs text-muted-foreground">
+        The same check, applied again to whatever it finds inside.
+      </p>
+      <SegmentedControl
+        label="Scenario"
+        size="md"
+        labelAs="label"
+        options={OPTIONS}
+        value={inputs.scenario}
+        onChange={(scenario) => onInputsChange({ scenario })}
+        optionLabel={(option) => SCENARIO_LABEL[option]}
+      />
     </div>
   );
 }

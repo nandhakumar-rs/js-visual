@@ -114,7 +114,7 @@ export const scopeLab: LabDefinition<ScopeInputs, ScopeStepState> = {
     question:
       "Choose the expression that can read one variable from each visible scope while execution is inside the if block.",
     code: [
-      'const appName = "JS Visual Lab";',
+      'const appName = "Visualize JS";',
       "",
       "function startLesson() {",
       '  const learner = "Maya";',

@@ -6,7 +6,7 @@ import { ScopeBox } from "@/components/visualizers/ScopeBox";
 import { StateBadge } from "@/components/visualizers/StateBadge";
 
 const EXAMPLE_CODE = [
-  'const appName = "JS Visual Lab";',
+  'const appName = "Visualize JS";',
   "",
   "function greetUser() {",
   '  const userName = "Maya";',
@@ -72,7 +72,7 @@ export function UnderstandContent() {
         <ScopeBox
           label="Global Scope"
           kind="global"
-          variables={[{ name: "appName", displayValue: '"JS Visual Lab"', status: "set" }]}
+          variables={[{ name: "appName", displayValue: '"Visualize JS"', status: "set" }]}
         >
           <ScopeBox
             label="Function Scope — greetUser()"

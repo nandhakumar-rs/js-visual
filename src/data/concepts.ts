@@ -433,6 +433,8 @@ export const concepts: Concept[] = [
     difficulty: "beginner",
     prerequisites: ["callbacks"],
     interviewQuestion: "What makes deeply nested callbacks hard to maintain, and what replaced this pattern?",
+    interviewAnswer:
+      "Each step's result is delivered as an argument to its callback, so it is only in scope inside that callback — which means the next dependent step has to be written in there. Nesting depth therefore tracks the number of sequential steps exactly, and it is forced by the data flow rather than chosen. The costs are that indentation grows with every step, that there is no shared error path so the same check is repeated at every level, and that an error is passed rather than thrown so try/catch cannot help. Lifting the callbacks into named functions flattens the indentation but keeps the duplicated error handling and makes the chain read bottom-up. Promises replaced the pattern by making the eventual result a value that can be returned and chained, with a single catch for the whole chain, and async/await then let that chain be written as ordinary sequential statements.",
   },
   {
     id: "xhr",
@@ -472,12 +474,14 @@ export const concepts: Concept[] = [
     mvpOrder: 3,
     visibility: "mvp",
     simpleDescription:
-      "Any callback-based function can be wrapped so it returns a Promise instead, by resolving or rejecting inside the callback.",
+      "A Promise is a value standing in for a result that has not arrived yet. Because .then hands back another Promise, dependent steps form a flat chain instead of a pyramid, with one .catch for the whole thing.",
     technicalDescription:
-      "\"Promisifying\" wraps a callback-style API in new Promise((resolve, reject) => { ... }), calling resolve on success and reject on error, giving asynchronous work an object representing its future result.",
+      "A Promise is a one-transition state machine — pending, then permanently fulfilled or rejected. `.then` returns a new Promise, adopting the outcome of any Promise its handler returns, so sequential async steps chain rather than nest and a rejection skips remaining handlers to the nearest `.catch`. Callback-style APIs are \"promisified\" by wrapping them in new Promise((resolve, reject) => { ... }).",
     difficulty: "intermediate",
     prerequisites: ["callbacks"],
     interviewQuestion: "How would you convert a callback-based function into one that returns a Promise?",
+    interviewAnswer:
+      "Wrap the call in new Promise((resolve, reject) => { ... }) and call the original function inside the executor, resolving with the result and rejecting with the error — for an error-first callback that is literally `if (error) reject(error); else resolve(value)`. The executor runs synchronously, but resolve and reject can be called whenever the work finishes. What this buys is that the eventual result becomes a value: it can be returned, stored and passed around, it settles exactly once so a double callback cannot corrupt it, and because .then returns a new Promise that adopts whatever its handler returns, dependent steps chain flatly instead of nesting. A rejection anywhere in that chain skips the remaining .then handlers and goes to the nearest .catch, which replaces the per-level error check that callback code needs.",
   },
   {
     id: "event-loop",
@@ -494,6 +498,8 @@ export const concepts: Concept[] = [
     difficulty: "intermediate",
     prerequisites: ["callback-to-promise"],
     interviewQuestion: "What is the event loop, and how does it decide when a setTimeout callback actually runs?",
+    interviewAnswer:
+      "JavaScript runs on a single thread with one call stack, so only one thing executes at a time and a running task is never interrupted. setTimeout does not wait — it registers the callback with a Web API and returns immediately, so the browser does the timing off the stack. When the time is up the browser does not run the callback; it puts it in the task queue. The event loop is the scheduler that watches for the call stack to be empty and, when it is, moves the first queued task onto the stack. So a setTimeout callback runs at the first moment the stack is empty after its timer has finished — meaning the delay is a minimum, not a schedule, and a setTimeout(fn, 0) behind a long synchronous function can be hundreds of milliseconds late. The same queue also receives UI events and completed I/O, which is why blocking the stack freezes the page.",
   },
   {
     id: "microtask-queue",
@@ -511,6 +517,8 @@ export const concepts: Concept[] = [
     prerequisites: ["event-loop"],
     interviewQuestion:
       "Why does a Promise.then() callback run before a setTimeout(fn, 0) callback, even if the promise resolves later in the code?",
+    interviewAnswer:
+      "Because they wait in different queues with different priority. setTimeout callbacks go to the task queue; promise handlers and queueMicrotask go to the microtask queue. When the call stack empties, the event loop always checks the microtask queue first, and it drains that queue completely before taking a single task — including microtasks that were added while the drain was already running, so a chain of .then handlers all completes in one pass. Only when the microtask queue is genuinely empty does one task run, and then the drain happens again before the next task. So the order a callback was scheduled in does not decide when it runs; the queue it landed in does. The trade-off is that a microtask which keeps queuing another microtask starves the task queue entirely — timers never fire and the page never repaints, with no error to explain it.",
   },
   {
     id: "async-await",
@@ -527,6 +535,8 @@ export const concepts: Concept[] = [
     difficulty: "intermediate",
     prerequisites: ["microtask-queue"],
     interviewQuestion: "Does await block the JavaScript thread while waiting for a promise?",
+    interviewAnswer:
+      "No — it pauses one function, not the thread. At an await the async function is lifted off the call stack and parked with the line it stopped on and every variable it had bound, and the stack is handed straight back, so the rest of the script, clicks, timers and repaints all still run. When the awaited promise settles, the remainder of the function is queued as a microtask rather than run on the spot, which is why it resumes only once the stack is empty and why every rule about microtask ordering still applies. On resuming, the fulfilled value becomes the value of the await expression so it binds to an ordinary const, and a rejection is turned back into a throw at the awaiting line — which is what lets a normal try/catch cover asynchronous work. The practical trap is that because await reads like a blocking call, independent steps get awaited on consecutive lines and their times add up; starting them all first and awaiting once takes as long as the slowest instead.",
   },
   {
     id: "parallel-async",
@@ -590,6 +600,8 @@ export const concepts: Concept[] = [
     difficulty: "intermediate",
     prerequisites: ["immutable-arrays"],
     interviewQuestion: "Why does { a: { b: 1 } } === { a: { b: 1 } } evaluate to false?",
+    interviewAnswer:
+      "Because each literal creates its own object, and for objects === compares identity rather than contents — it never reads a property before answering. Only two names for the same object compare true, which is why `const c = a; a === c` is true while two identical-looking literals are not. When you actually mean \"same contents\", you write a shallow equality check: compare the two key counts, then walk one object's own keys and compare each pair of values with ===. That answers the question correctly as long as every value is a primitive, because === compares primitives by value. The moment a value is another object the same identity rule applies one level down — a nested object is reached through a reference the parent holds — so two structurally identical nested objects make the whole check fail. Going deeper means recursing into matching keys, which is what a deep equality function does; the JSON.stringify shortcut is unreliable because it depends on key order and drops undefined values and functions.",
   },
   {
     id: "deep-comparison",
@@ -606,6 +618,8 @@ export const concepts: Concept[] = [
     difficulty: "intermediate",
     prerequisites: ["shallow-comparison"],
     interviewQuestion: "How would you write a deep-equal function, and what's its time complexity?",
+    interviewAnswer:
+      "It is a shallow comparison with one extra rule: when both values turn out to be objects, instead of answering you call yourself again on each key. So the function is three base cases and a recursive step — return true if x === y, return false if either is not an object, return false if either is null (typeof null is \"object\", so it slips past the object check and Object.keys(null) throws), then compare key counts and recurse into every key. The key-count check is what makes it symmetric; without it an extra key on the second object goes unnoticed, and swapping the arguments changes the answer. Complexity is O(n) where n is the total number of values in the tree, not the number of top-level keys: comparing equal objects makes exactly one call per node, so 40 values cost 40 comparisons. A mismatch short-circuits at the first difference in key order, so a difference in the first key costs two calls however large the data is, while one in the deepest leaf costs the whole traversal. Worth naming the limits: NaN fails unless the leaf check is Object.is, Date/Map/Set/RegExp have no own enumerable keys so any two look equal, and a cyclic object recurses forever unless visited pairs are tracked — which is why production code uses a library.",
   },
   {
     id: "memoization",
@@ -622,6 +636,8 @@ export const concepts: Concept[] = [
     difficulty: "intermediate",
     prerequisites: ["deep-comparison"],
     interviewQuestion: "What is memoization, and when would using it hurt more than help?",
+    interviewAnswer:
+      "Memoization caches a function's results by its arguments: look the key up first, return the stored value on a hit, and on a miss do the work, store it, then return it. It trades memory for time — one entry per distinct input, one calculation saved per repeat — so its value is entirely the repeat rate. The classic win is recursion with overlapping subproblems: fib(30) makes 2,692,537 calls naively and 31 with a cache. It hurts in three distinct ways. First, when inputs rarely repeat: every call pays the failed lookup and the write and nothing is ever saved, while a Map that only grows is a memory leak — which is why bounded caches and WeakMaps keyed by object identity exist. Second, when the function is not pure: if it reads outside state, or returns something that gets mutated, the cache serves a stale answer with no error to show for it. Third, when the key is wrong. \"Have I been asked this before?\" is an equality question, so a Map keyed by an object matches only that exact object and a look-alike silently misses and adds a row; keying by JSON.stringify instead costs an O(n) walk per call and fails in both directions — it collides, since undefined values are dropped so { a: undefined } and {} share a key, and it splits, since key order matters so { x: 1, y: 2 } and { y: 2, x: 1 } do not. A wrong answer from a false hit is far worse than a missed optimisation.",
   },
 ];
 

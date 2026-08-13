@@ -1,48 +1,36 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { SegmentedControl } from "@/components/learning/SegmentedControl";
 import type { LabControlsProps } from "@/types/lab";
-import type { ShallowComparisonInputs, ShallowComparisonStepState } from "./types";
+import type { ScenarioId, ShallowComparisonInputs, ShallowComparisonStepState } from "./types";
+
+const OPTIONS: readonly ScenarioId[] = ["look-alikes", "shallow", "nested", "all-together"];
+
+const SCENARIO_LABEL: Record<ScenarioId, string> = {
+  "look-alikes": "Same contents",
+  shallow: "Key by key",
+  nested: "Where it stops",
+  "all-together": "All together",
+};
 
 export function ShallowComparisonControls({
   inputs,
   onInputsChange,
 }: LabControlsProps<ShallowComparisonInputs, ShallowComparisonStepState>) {
   return (
-    <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="space-y-1">
-          <Label htmlFor="name-a">a.name</Label>
-          <Input id="name-a" value={inputs.nameA} onChange={(e) => onInputsChange({ ...inputs, nameA: e.target.value })} />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="name-b">b.name</Label>
-          <Input id="name-b" value={inputs.nameB} onChange={(e) => onInputsChange({ ...inputs, nameB: e.target.value })} />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="city-a">a.address.city</Label>
-          <Input id="city-a" value={inputs.cityA} onChange={(e) => onInputsChange({ ...inputs, cityA: e.target.value })} />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="city-b">b.address.city</Label>
-          <Input
-            id="city-b"
-            value={inputs.cityB}
-            disabled={inputs.shareAddressRef}
-            onChange={(e) => onInputsChange({ ...inputs, cityB: e.target.value })}
-          />
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Switch
-          id="share-ref"
-          checked={inputs.shareAddressRef}
-          onCheckedChange={(checked) => onInputsChange({ ...inputs, shareAddressRef: checked })}
-        />
-        <Label htmlFor="share-ref">b.address = a.address (share the same object)</Label>
-      </div>
+    <div className="@container space-y-2">
+      <p className="text-xs text-muted-foreground">
+        Which object, not which contents &mdash; and where that stops being enough.
+      </p>
+      <SegmentedControl
+        label="Scenario"
+        size="md"
+        labelAs="label"
+        options={OPTIONS}
+        value={inputs.scenario}
+        onChange={(scenario) => onInputsChange({ scenario })}
+        optionLabel={(option) => SCENARIO_LABEL[option]}
+      />
     </div>
   );
 }
