@@ -9,8 +9,6 @@ import { ExplainSummary } from "./ExplainSummary";
 
 export interface GuidedLessonShellProps {
   concept: Concept;
-  positionInSection: number;
-  totalInSection: number;
   explanation: ReactNode;
   experience?: ExperienceConfig;
   code: ReactNode;
@@ -38,8 +36,6 @@ export interface GuidedLessonShellProps {
  */
 export function GuidedLessonShell({
   concept,
-  positionInSection,
-  totalInSection,
   explanation,
   experience,
   code,
@@ -55,12 +51,7 @@ export function GuidedLessonShell({
 }: GuidedLessonShellProps) {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <LessonHeader
-        concept={concept}
-        positionInSection={positionInSection}
-        totalInSection={totalInSection}
-        explanation={explanation}
-      />
+      <LessonHeader concept={concept} explanation={explanation} />
 
       {experience && (
         <section aria-label="Understand" className="space-y-2">

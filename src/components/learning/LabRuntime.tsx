@@ -22,11 +22,9 @@ export interface LabRuntimeProps {
   // that can't cross the server/client boundary as props.
   slug: string;
   concept: Concept;
-  positionInSection: number;
-  totalInSection: number;
 }
 
-export function LabRuntime({ slug, concept, positionInSection, totalInSection }: LabRuntimeProps) {
+export function LabRuntime({ slug, concept }: LabRuntimeProps) {
   const lab = labRegistry[slug];
   if (!lab) {
     throw new Error(`LabRuntime: no lab registered for slug "${slug}"`);
@@ -59,8 +57,6 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
     return (
       <GuidedLessonShell
         concept={concept}
-        positionInSection={positionInSection}
-        totalInSection={totalInSection}
         explanation={<ExplanationPanel concept={concept} />}
         experience={lab.experience}
         code={<CodePanel code={code} activeLines={engine.currentStep?.activeCodeLines ?? []} />}
@@ -83,7 +79,9 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
         }
         experimentPanel={lab.experimentPanel && <lab.experimentPanel />}
         explainSummary={lab.explainSummary}
-        prediction={lab.prediction && <PredictionCard prediction={lab.prediction} />}
+        prediction={
+          lab.prediction && <PredictionCard slug={concept.slug} prediction={lab.prediction} />
+        }
         footer={<LessonFooter concept={concept} lab={lab} />}
       />
     );
@@ -92,12 +90,10 @@ export function LabRuntime({ slug, concept, positionInSection, totalInSection }:
   return (
     <LessonShell
       concept={concept}
-      positionInSection={positionInSection}
-      totalInSection={totalInSection}
       explanation={<ExplanationPanel concept={concept} />}
       controls={
         <div className="space-y-4">
-          {lab.prediction && <PredictionCard prediction={lab.prediction} />}
+          {lab.prediction && <PredictionCard slug={concept.slug} prediction={lab.prediction} />}
           {lab.Controls && <lab.Controls inputs={inputs} onInputsChange={setInputs} engine={engine} />}
         </div>
       }

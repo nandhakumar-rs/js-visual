@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Braces } from "lucide-react";
 import { SearchCommand } from "./SearchCommand";
 import { ThemeToggle } from "./ThemeToggle";
+import { SoundToggle } from "./SoundToggle";
+import { TrackProgress } from "./TrackProgress";
 
 export function AppHeader() {
   return (
@@ -15,6 +17,8 @@ export function AppHeader() {
         <div className="flex-1" />
 
         <SearchCommand />
+        <TrackProgress />
+        <SoundToggle />
         <ThemeToggle />
       </div>
     </header>

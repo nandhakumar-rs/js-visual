@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { StoreHydration } from "@/components/layout/StoreHydration";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { CelebrationProvider } from "@/components/feedback/CelebrationProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
@@ -25,9 +26,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           <TooltipProvider delay={200}>
-            <StoreHydration />
-            <AppHeader />
-            <main className="flex-1">{children}</main>
+            <CelebrationProvider>
+              <StoreHydration />
+              <AppHeader />
+              <main className="flex-1">{children}</main>
+            </CelebrationProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Check, X } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -16,11 +16,42 @@ export interface ChoiceQuestionProps {
   options: ChoiceOption[];
   correctOptionId: string;
   explanation: string;
-  onAnswered?: (correct: boolean) => void;
+  /** `isFirstAttempt` is false once "Try another answer" has been used. */
+  onAnswered?: (correct: boolean, isFirstAttempt: boolean) => void;
   submitLabel?: string;
   resultNoun?: string;
   /** Optional extra line shown after reveal, e.g. the lab's actual runtime result. */
   actualResultLabel?: string;
+}
+
+/** djb2 over the question's own text — stable across renders and reloads. */
+function hash(input: string): number {
+  let h = 5381;
+  for (let i = 0; i < input.length; i++) h = ((h << 5) + h + input.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/**
+ * Fisher-Yates with a seeded generator, so the order is scrambled but fixed for
+ * a given question.
+ *
+ * It has to be deterministic on two counts. The server and the first client
+ * render must agree or hydration breaks, and the options must not rearrange
+ * themselves underneath someone who is midway through reading them — including
+ * after "Try another answer", which re-renders this component.
+ */
+function shuffleStable<T>(items: T[], seed: number): T[] {
+  const out = [...items];
+  let s = seed || 1;
+  for (let i = out.length - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) >>> 0;
+    // Scale from the top bits, not `s % (i + 1)`. A power-of-two-modulus LCG
+    // has famously weak low bits, and taking the remainder reads only those —
+    // which piled 58% of correct answers into the last slot.
+    const j = Math.floor((s / 4294967296) * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 export function ChoiceQuestion({
@@ -36,6 +67,17 @@ export function ChoiceQuestion({
 }: ChoiceQuestionProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
+  // Survives "Try another answer", which only resets the selection — so a
+  // retried question can never be reported as a first attempt.
+  const [attempts, setAttempts] = useState(0);
+
+  // Questions are authored with the correct option written first, which would
+  // otherwise make "pick the top one" a winning strategy. Seeded on the
+  // question's own text so every question gets a different permutation.
+  const shown = useMemo(
+    () => shuffleStable(options, hash((prompt ?? "") + options.map((o) => o.id).join("|"))),
+    [options, prompt]
+  );
 
   const correct = selected === correctOptionId;
   const selectedOption = options.find((o) => o.id === selected);
@@ -43,7 +85,8 @@ export function ChoiceQuestion({
   function handleSubmit() {
     if (!selected) return;
     setRevealed(true);
-    onAnswered?.(selected === correctOptionId);
+    setAttempts((n) => n + 1);
+    onAnswered?.(selected === correctOptionId, attempts === 0);
   }
 
   function handleRetry() {
@@ -61,7 +104,7 @@ export function ChoiceQuestion({
       {code && <CodePanel code={code} title="" showLineNumbers={false} />}
 
       <div className="flex flex-col gap-2" role="radiogroup" aria-label={prompt ?? "Answer options"}>
-        {options.map((option) => {
+        {shown.map((option) => {
           const isSelected = selected === option.id;
           const isCorrectOption = option.id === correctOptionId;
           return (

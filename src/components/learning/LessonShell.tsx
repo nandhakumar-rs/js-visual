@@ -4,8 +4,6 @@ import { LessonHeader } from "./LessonHeader";
 
 export interface LessonShellProps {
   concept: Concept;
-  positionInSection: number;
-  totalInSection: number;
   explanation: ReactNode;
   controls?: ReactNode;
   code: ReactNode;
@@ -18,8 +16,6 @@ export interface LessonShellProps {
 
 export function LessonShell({
   concept,
-  positionInSection,
-  totalInSection,
   explanation,
   controls,
   code,
@@ -33,8 +29,6 @@ export function LessonShell({
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <LessonHeader
         concept={concept}
-        positionInSection={positionInSection}
-        totalInSection={totalInSection}
         explanation={explanation}
       />
 

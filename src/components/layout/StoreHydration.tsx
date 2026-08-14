@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useProgress } from "@/lib/progress/store";
+import { useSound } from "@/lib/sound/store";
 
 /**
  * Persisted zustand stores use skipHydration so the server render and the
@@ -14,6 +15,7 @@ import { useProgress } from "@/lib/progress/store";
 export function StoreHydration() {
   useEffect(() => {
     useProgress.persist.rehydrate();
+    useSound.persist.rehydrate();
   }, []);
 
   return null;
